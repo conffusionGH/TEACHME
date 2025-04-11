@@ -23,6 +23,5 @@ const APIEndPoints = {
         method: 'delete'
     }
 }
-//get post loclahost800 crud
 
 export default APIEndPoints;
