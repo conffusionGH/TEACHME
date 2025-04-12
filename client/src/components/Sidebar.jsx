@@ -12,6 +12,10 @@ import {
 } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { deleteUserFailure, deleteUserSuccess, signOutUserStart } from '../redux/user/userSlice';
+import APIEndPoints from '../middleware/ApiEndPoints';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
   const [openSections, setOpenSections] = useState({
@@ -20,6 +24,14 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
     forms: false
   });
   const sidebarRef = useRef();
+
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+
+
+  const signOutUrl = APIEndPoints.sign_out;
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,6 +53,28 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
 
   const handleLinkClick = () => {
     toggleSidebar();
+  };
+
+
+  const handleSignOut = async () => {
+    if (!currentUser) return;
+    try {
+      dispatch(signOutUserStart());
+      const res = await axios({
+        url: signOutUrl.url,
+        method: signOutUrl.method
+      });
+
+      if (res.data.success === false) {
+        dispatch(deleteUserFailure(res.data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(res.data));
+      setFormData({});
+      navigate('/');
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
   };
 
   return (
@@ -255,13 +289,16 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
               </nav>
 
               {/* Logout */}
-              <div className="mt-auto pt-2">
+              <div className="mt-auto pt-2 " onClick={handleSignOut}>
                 <button
                   className="flex items-center w-full p-3 rounded-lg hover:bg-red-50 text-red-500"
                   onClick={toggleSidebar}
                 >
                   <FaSignOutAlt className="mr-3" size={18} />
-                  Log Out
+                  {/* onClick={handleSignOut} */}
+                  <span  >
+                    Sign out
+                  </span>
                 </button>
               </div>
             </div>

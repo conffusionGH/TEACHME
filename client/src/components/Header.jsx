@@ -14,8 +14,8 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
           >
             <FiMenu size={24} />
           </button>
-          <Link to='/'>
-            <div className='font-bold text-sm sm:text-xl flex flex-wrap items-center gap-2'>
+          <Link to='/' className=''>
+            <div className='flex lg:hidden font-bold text-sm sm:text-xl  flex-wrap items-center gap-2 '>
               <div className='flex justify-around items-center'>
                 <div className='w-10 h-10 rounded-full border-2 border-primary overflow-hidden'>
                   <img
@@ -24,7 +24,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
                     className='object-cover w-full h-full'
                   />
                 </div>
-                <div className='pl-1 text-primary'>Teach Me</div>
+                {/* <div className='pl-1 text-primary'>Teach Me</div> */}
               </div>
             </div>
           </Link>

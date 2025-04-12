@@ -11,13 +11,17 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
-          <Route path='/' element={<Home />} />
-          <Route path='/sign-in' element={<SignIn />} />
-          <Route path='/sign-up' element={<SignUp/>} />
-          <Route path='/about' element={<About />} />
-          <Route element={<PrivateRoute />}>
-            <Route path='/profile' element={<Profile />} />
+        {/* Public Routes */}
+        <Route path="/sign-in" element={<SignIn />} />
+
+        {/* Protected Routes */}
+        <Route element={<PrivateRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/profile" element={<Profile />} />
+            {/* Add other protected routes here */}
           </Route>
         </Route>
       </Routes>
