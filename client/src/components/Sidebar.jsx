@@ -32,6 +32,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
 
   const signOutUrl = APIEndPoints.sign_out;
 
+  const canAccessSignUp = ['admin', 'manager'].includes(currentUser?.roles);
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -156,29 +159,29 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                         >
                           <li>
                             <Link
-                              to="/roles/manager"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              to="/managers"
+                              className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
                               onClick={handleLinkClick}
                             >
-                              Manager
+                              Managers
                             </Link>
                           </li>
                           <li>
                             <Link
-                              to="/roles/teacher"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              to="/teachers"
+                              className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
                               onClick={handleLinkClick}
                             >
-                              Teacher
+                              Teachers
                             </Link>
                           </li>
                           <li>
                             <Link
-                              to="/roles/student"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              to="/students"
+                              className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
                               onClick={handleLinkClick}
                             >
-                              Student
+                              Students
                             </Link>
                           </li>
                         </motion.ul>
@@ -212,7 +215,15 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                               className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
                               onClick={handleLinkClick}
                             >
-                              <FaMoneyBillWave className="mr-3" size={16} />
+                              Roles
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              to="/management/fee"
+                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              onClick={handleLinkClick}
+                            >
                               Fee
                             </Link>
                           </li>
@@ -231,7 +242,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                               className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
                               onClick={handleLinkClick}
                             >
-                              <FaBook className="mr-3" size={16} />
                               Subjects
                             </Link>
                           </li>
@@ -269,6 +279,17 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                               Request Form
                             </Link>
                           </li>
+                          {canAccessSignUp && (
+                            <li>
+                              <Link
+                                to="/sign-up"
+                                className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                                onClick={handleLinkClick}
+                              >
+                                Signup Form
+                              </Link>
+                            </li>
+                          )}
                         </motion.ul>
                       )}
                     </AnimatePresence>
@@ -295,7 +316,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                   onClick={toggleSidebar}
                 >
                   <FaSignOutAlt className="mr-3" size={18} />
-                  {/* onClick={handleSignOut} */}
                   <span  >
                     Sign out
                   </span>

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import { Toaster } from 'react-hot-toast';
+
 
 
 export default function Layout() {
@@ -52,6 +54,17 @@ export default function Layout() {
           </div>
         </main>
       </div>
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+      
     </div>
   );
 }

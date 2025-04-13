@@ -1,14 +1,46 @@
 import express from 'express';
-import { deleteUser, test, updateUser,  getUserListings, getUser} from '../controllers/user.controller.js';
+import { 
+  test, 
+  updateUser, 
+  deleteUser, 
+  getUser, 
+  getAllUsers,
+  updateUserRole,
+  getDeletedUsers,
+  restoreUser,
+  permanentDeleteUser,
+  clearRecycleBin,
+  getManagers,
+  getTeachers,
+  getStudents
+} from '../controllers/user.controller.js';
 import { verifyToken } from '../utils/verifyUser.js';
-
 
 const router = express.Router();
 
+// Test route
 router.get('/test', test);
-router.post('/update/:id', verifyToken, updateUser)
-router.delete('/delete/:id', verifyToken, deleteUser)
-router.get('/listings/:id', verifyToken, getUserListings)
-router.get('/:id', verifyToken, getUser)
+
+// Paginated user lists
+router.get('/', verifyToken, getAllUsers);
+router.get('/managers', verifyToken, getManagers);
+router.get('/teachers', verifyToken, getTeachers);
+router.get('/students', verifyToken, getStudents);
+
+// Recycle bin routes
+router.get('/bin/deleted', verifyToken, getDeletedUsers);
+router.put('/bin/restore/:id', verifyToken, restoreUser);
+router.delete('/bin/permanent/:id', verifyToken, permanentDeleteUser);
+router.delete('/bin/clear', verifyToken, clearRecycleBin);
+
+// User CRUD operations
+router.post('/update/:id', verifyToken, updateUser);
+router.delete('/delete/:id', verifyToken, deleteUser);
+router.get('/:id', verifyToken, getUser);
+
+
+// Admin-only routes
+router.post('/update-role/:id', verifyToken, updateUserRole);
+
 
 export default router;
