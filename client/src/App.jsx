@@ -1,5 +1,4 @@
 
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -12,6 +11,8 @@ import RestrictedRoute from './components/RestrictedRoute';
 import Managers from './pages/RolesManagement/Managers';
 import Teachers from './pages/RolesManagement/Teachers';
 import Students from './pages/RolesManagement/Students';
+import DeletedUsers from './pages/RecycleBin/DeletedUsers';
+import RolesIndustry from './pages/ManagementIndustry/RolesIndustry,';
 
 
 export default function App() {
@@ -34,7 +35,11 @@ export default function App() {
               <Route path="/managers" element={<Managers />} />
               <Route path="/teachers" element={<Teachers />} />
               <Route path="/students" element={<Students />} />
+              <Route path="/management/roles" element={<RolesIndustry />} />
 
+            </Route>
+            <Route element={<RestrictedRoute allowedRoles={['admin']} />}>
+              <Route path="/recycle-bin" element={<DeletedUsers />} />
             </Route>
 
             {/* Add other protected routes here */}

@@ -24,7 +24,6 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
                     className='object-cover w-full h-full'
                   />
                 </div>
-                {/* <div className='pl-1 text-primary'>Teach Me</div> */}
               </div>
             </div>
           </Link>

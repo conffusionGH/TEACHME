@@ -1,13 +1,14 @@
 
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import ReactPaginate from 'react-paginate';
-import { FaEdit, FaTrash, FaUser } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { FaTrashRestore, FaTrash } from 'react-icons/fa';
+import APIEndPoints from '../../middleware/ApiEndPoints';
 
-const UserList = ({ userType, apiEndpoint, deleteEndpoint }) => {
+const DeletedUsers = () => {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -15,62 +16,80 @@ const UserList = ({ userType, apiEndpoint, deleteEndpoint }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { currentUser } = useSelector((state) => state.user);
 
-  const fetchUsers = async (page = 1) => {
+  const apiDeletedUsers = APIEndPoints.get_deleted_users.url;
+  const apiRestoredUsers = APIEndPoints.restore_user.url;
+
+  const fetchDeletedUsers = async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${apiEndpoint}?page=${page}`, {
+      const response = await axios.get(`${apiDeletedUsers}?page=${page}`, {
         withCredentials: true
       });
 
-      let usersData = response.data?.[userType.toLowerCase() + 's'] || response.data?.users || [];
+      const responseData = response.data || {};
+      const usersData = responseData.deletedUsers || [];
       
-      // Filter users based on current user's role
-      if (currentUser?.roles === 'manager') {
-        usersData = usersData.filter(user => 
-          user.roles === 'teacher' || user.roles === 'student'
-        );
-      } else if (currentUser?.roles === 'teacher') {
-        usersData = usersData.filter(user => user.roles === 'student');
-      }
-
       setUsers(usersData);
-      setCurrentPage(response.data?.currentPage ? response.data.currentPage - 1 : 0);
-      setTotalPages(response.data?.totalPages || 0);
-      setTotalUsers(response.data?.totalUsers || 0);
+      setCurrentPage(responseData.currentPage ? responseData.currentPage - 1 : 0);
+      setTotalPages(responseData.totalPages || 0);
+      setTotalUsers(responseData.totalUsers || 0);
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to fetch users');
-      toast.error(error.response?.data?.message || 'Failed to fetch users');
+      setError(error.response?.data?.message || 'Failed to fetch deleted users');
+      toast.error(error.response?.data?.message || 'Failed to fetch deleted users');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers(1);
-  }, [apiEndpoint, userType, currentUser?.roles]);
+    fetchDeletedUsers(1);
+  }, []);
 
   const handlePageClick = (data) => {
     const selectedPage = data.selected + 1;
-    fetchUsers(selectedPage);
+    fetchDeletedUsers(selectedPage);
   };
 
-  const handleEdit = (userId) => {
-    navigate(`/edit-user/${userId}`);
-  };
-
-  const handleDelete = async (userId) => {
-    if (window.confirm(`Are you sure you want to delete this ${userType.toLowerCase()}?`)) {
+  const handleRestore = async (userId) => {
+    if (window.confirm('Are you sure you want to restore this user?')) {
       try {
-        await axios.delete(`${deleteEndpoint}/${userId}`, {
+        await axios.put(`${apiRestoredUsers}/${userId}`, {}, {
           withCredentials: true
         });
-        toast.success(`${userType} deleted successfully`);
-        fetchUsers(currentPage + 1);
+        toast.success('User restored successfully');
+        fetchDeletedUsers(currentPage + 1);
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Failed to restore user');
+      }
+    }
+  };
+
+  const handlePermanentDelete = async (userId) => {
+    if (window.confirm('Are you sure you want to permanently delete this user? This action cannot be undone!')) {
+      try {
+        await axios.delete(`${APIEndPoints.permanent_delete_user.url}/${userId}`, {
+          withCredentials: true
+        });
+        toast.success('User permanently deleted');
+        fetchDeletedUsers(currentPage + 1);
       } catch (error) {
         toast.error(error.response?.data?.message || 'Failed to delete user');
+      }
+    }
+  };
+
+  const handleClearAll = async () => {
+    if (window.confirm('Are you sure you want to permanently delete ALL users in the recycle bin? This action cannot be undone!')) {
+      try {
+        await axios.delete(APIEndPoints.clear_recycle_bin.url, {
+          withCredentials: true
+        });
+        toast.success('Recycle bin cleared successfully');
+        fetchDeletedUsers(1);
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Failed to clear recycle bin');
       }
     }
   };
@@ -94,10 +113,21 @@ const UserList = ({ userType, apiEndpoint, deleteEndpoint }) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-tertiary">
-        <div className="px-6 py-4 bg-secondary">
+        <div className="px-6 py-4 bg-secondary flex justify-between items-center">
           <h2 className="text-xl font-semibold text-primary">
-            {userType}s ({totalUsers})
+            Recycle Bin ({totalUsers})
           </h2>
+          <button
+            onClick={handleClearAll}
+            disabled={totalUsers === 0}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              totalUsers === 0
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-error text-white hover:bg-error/90 shadow-md hover:shadow-lg'
+            }`}
+          >
+            Clear All
+          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -148,18 +178,19 @@ const UserList = ({ userType, apiEndpoint, deleteEndpoint }) => {
                         {user.roles.charAt(0).toUpperCase() + user.roles.slice(1)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                  
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
-                        onClick={() => handleEdit(user._id)}
+                        onClick={() => handleRestore(user._id)}
                         className="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 shadow-md hover:shadow-lg transition-all"
-                        title="Edit"
+                        title="Restore"
                       >
-                        <FaEdit className="h-4 w-4" />
+                        <FaTrashRestore className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(user._id)}
+                        onClick={() => handlePermanentDelete(user._id)}
                         className="bg-error text-white p-2 rounded-lg hover:bg-error/90 shadow-md hover:shadow-lg transition-all"
-                        title="Delete"
+                        title="Permanently Delete"
                       >
                         <FaTrash className="h-4 w-4" />
                       </button>
@@ -168,8 +199,8 @@ const UserList = ({ userType, apiEndpoint, deleteEndpoint }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
-                    No {userType.toLowerCase()}s found
+                  <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                    Recycle bin is empty
                   </td>
                 </tr>
               )}
@@ -190,9 +221,9 @@ const UserList = ({ userType, apiEndpoint, deleteEndpoint }) => {
               containerClassName={'flex justify-center space-x-2'}
               pageClassName={' rounded-lg border border-tertiary hover:bg-secondary/20'}
               pageLinkClassName={'text-primary px-3 py-2'}
-              activeClassName={'bg-secondary'}
-              previousClassName={'px-3 py-1 rounded-lg border border-tertiary bg-secondary/20 hover:bg-primary/20'}
-              nextClassName={'px-3 py-1 rounded-lg border border-tertiary bg-secondary/20 hover:bg-primary/20'}
+              activeClassName={'bg-primary text-white'}
+              previousClassName={'px-3 py-1 rounded-lg border border-tertiary hover:bg-secondary/20'}
+              nextClassName={'px-3 py-1 rounded-lg border border-tertiary hover:bg-secondary/20'}
               disabledClassName={'opacity-50 cursor-not-allowed'}
               forcePage={currentPage}
             />
@@ -203,4 +234,4 @@ const UserList = ({ userType, apiEndpoint, deleteEndpoint }) => {
   );
 };
 
-export default UserList;
+export default DeletedUsers;

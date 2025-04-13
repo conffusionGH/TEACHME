@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaTimes,
@@ -13,6 +13,7 @@ import {
 import { MdDashboard } from 'react-icons/md';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { deleteUserFailure, deleteUserSuccess, signOutUserStart } from '../redux/user/userSlice';
+import { FaTrashAlt } from 'react-icons/fa';
 import APIEndPoints from '../middleware/ApiEndPoints';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
@@ -24,17 +25,29 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
     forms: false
   });
   const sidebarRef = useRef();
-
-  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const location = useLocation();
+  const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-
+  // Style variables
+  const menuTitleActive = 'bg-primary/40 text-primary';
+  const menuTitleInactive = 'hover:bg-tertiary text-primary';
+  const subMenuActive = 'bg-tertiary text-primary';
+  const subMenuInactive = 'hover:bg-tertiary text-primary';
 
   const signOutUrl = APIEndPoints.sign_out;
-
   const canAccessSignUp = ['admin', 'manager'].includes(currentUser?.roles);
+  const isAdmin = currentUser?.roles === 'admin';
 
-
+  // Auto-expand sections based on current route
+  useEffect(() => {
+    const path = location.pathname;
+    setOpenSections({
+      roles: path.includes('/managers') || path.includes('/teachers') || path.includes('/students'),
+      management: path.includes('/management'),
+      forms: path.includes('/forms') || path.includes('/sign-up')
+    });
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,12 +68,22 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
   };
 
   const handleLinkClick = () => {
-    toggleSidebar();
+    if (!isPermanent) {
+      toggleSidebar();
+    }
   };
 
+  const isActive = (path) => {
+    return location.pathname === path ||
+      (path !== '/' && location.pathname.startsWith(path));
+  };
 
   const handleSignOut = async () => {
     if (!currentUser) return;
+
+    const confirmSignOut = window.confirm(`Are you sure you want to sign out, ${currentUser.username}?`);
+    if (!confirmSignOut) return;
+
     try {
       dispatch(signOutUserStart());
       const res = await axios({
@@ -73,8 +96,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
         return;
       }
       dispatch(deleteUserSuccess(res.data));
-      setFormData({});
-      navigate('/');
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
@@ -105,31 +126,32 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'tween' }}
-            className={`fixed lg:relative inset-y-0 left-0 w-64 bg-white shadow-lg z-50 ${isPermanent ? 'lg:flex' : ''
-              }`}
+            className={`fixed lg:relative inset-y-0 left-0 w-64 bg-white shadow-lg z-50 ${isPermanent ? 'lg:flex' : ''}`}
           >
             <div className="p-4 h-full flex flex-col">
               {/* Header with close button */}
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-primary">Teach Me</h2>
-                {!isPermanent && (
-                  <button
-                    onClick={toggleSidebar}
-                    className="text-gray-500 hover:text-primary p-1"
-                    aria-label="Close sidebar"
-                  >
-                    <FaTimes size={20} />
-                  </button>
-                )}
-              </div>
+              <Link to='/'>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold text-primary">Teach Me</h2>
+                  {!isPermanent && (
+                    <button
+                      onClick={toggleSidebar}
+                      className="text-gray-500 hover:text-primary p-1"
+                      aria-label="Close sidebar"
+                    >
+                      <FaTimes size={20} />
+                    </button>
+                  )}
+                </div>
+              </Link>
 
               {/* Menu Items */}
               <nav className="flex-grow overflow-y-auto">
                 <ul className="space-y-1">
                   <li>
                     <Link
-                      to="/dashboard"
-                      className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
+                      to="/"
+                      className={`flex items-center p-3 rounded-lg ${isActive('/dashboard') ? menuTitleActive : menuTitleInactive}`}
                       onClick={handleLinkClick}
                     >
                       <MdDashboard className="mr-3" size={20} />
@@ -141,7 +163,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                   <li>
                     <button
                       onClick={() => toggleSection('roles')}
-                      className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-tertiary text-primary"
+                      className={`flex items-center justify-between w-full p-3 rounded-lg ${openSections.roles ? menuTitleActive : menuTitleInactive}`}
                     >
                       <div className="flex items-center">
                         <FaUser className="mr-3" size={18} />
@@ -160,7 +182,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           <li>
                             <Link
                               to="/managers"
-                              className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
+                              className={`flex items-center p-3 rounded-lg ${isActive('/managers') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Managers
@@ -169,7 +191,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           <li>
                             <Link
                               to="/teachers"
-                              className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
+                              className={`flex items-center p-3 rounded-lg ${isActive('/teachers') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Teachers
@@ -178,7 +200,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           <li>
                             <Link
                               to="/students"
-                              className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
+                              className={`flex items-center p-3 rounded-lg ${isActive('/students') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Students
@@ -193,7 +215,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                   <li>
                     <button
                       onClick={() => toggleSection('management')}
-                      className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-tertiary text-primary"
+                      className={`flex items-center justify-between w-full p-3 rounded-lg ${openSections.management ? menuTitleActive : menuTitleInactive}`}
                     >
                       <div className="flex items-center">
                         <FaChalkboardTeacher className="mr-3" size={18} />
@@ -211,8 +233,8 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                         >
                           <li>
                             <Link
-                              to="/management/fee"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              to="/management/roles"
+                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/roles') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Roles
@@ -221,7 +243,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           <li>
                             <Link
                               to="/management/fee"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/fee') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Fee
@@ -230,7 +252,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           <li>
                             <Link
                               to="/management/status"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/status') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Status
@@ -239,7 +261,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           <li>
                             <Link
                               to="/management/subjects"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/subjects') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Subjects
@@ -254,7 +276,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                   <li>
                     <button
                       onClick={() => toggleSection('forms')}
-                      className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-tertiary text-primary"
+                      className={`flex items-center justify-between w-full p-3 rounded-lg ${openSections.forms ? menuTitleActive : menuTitleInactive}`}
                     >
                       <div className="flex items-center">
                         <FaFileAlt className="mr-3" size={18} />
@@ -273,7 +295,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           <li>
                             <Link
                               to="/forms/request"
-                              className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/forms/request') ? subMenuActive : subMenuInactive}`}
                               onClick={handleLinkClick}
                             >
                               Request Form
@@ -283,7 +305,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                             <li>
                               <Link
                                 to="/sign-up"
-                                className="flex items-center p-2 text-sm rounded-lg hover:bg-tertiary text-primary"
+                                className={`flex items-center p-2 text-sm rounded-lg ${isActive('/sign-up') ? subMenuActive : subMenuInactive}`}
                                 onClick={handleLinkClick}
                               >
                                 Signup Form
@@ -295,11 +317,25 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                     </AnimatePresence>
                   </li>
 
+                  {/* Recycle Bin - Admin Only */}
+                  {isAdmin && (
+                    <li>
+                      <Link
+                        to="/recycle-bin"
+                        className={`flex items-center p-3 rounded-lg ${isActive('/recycle-bin') ? menuTitleActive : menuTitleInactive}`}
+                        onClick={handleLinkClick}
+                      >
+                        <FaTrashAlt className="mr-3" size={18} />
+                        Recycle Bin
+                      </Link>
+                    </li>
+                  )}
+
                   {/* Profile */}
                   <li>
                     <Link
                       to="/profile"
-                      className="flex items-center p-3 rounded-lg hover:bg-tertiary text-primary"
+                      className={`flex items-center p-3 rounded-lg ${isActive('/profile') ? menuTitleActive : menuTitleInactive}`}
                       onClick={handleLinkClick}
                     >
                       <FaUser className="mr-3" size={18} />
@@ -310,15 +346,13 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
               </nav>
 
               {/* Logout */}
-              <div className="mt-auto pt-2 " onClick={handleSignOut}>
+              <div className="mt-auto pt-2">
                 <button
-                  className="flex items-center w-full p-3 rounded-lg hover:bg-red-50 text-red-500"
-                  onClick={toggleSidebar}
+                  onClick={handleSignOut}
+                  className="flex items-center w-full p-3 rounded-lg hover:bg-error/10 text-error transition-colors"
                 >
                   <FaSignOutAlt className="mr-3" size={18} />
-                  <span  >
-                    Sign out
-                  </span>
+                  <span>Sign out</span>
                 </button>
               </div>
             </div>

@@ -22,7 +22,6 @@ const APIEndPoints = {
         url: `${serverDomain}/user/delete`,
         method: 'delete'
     },
-    // User Management
     get_all_users: {
         url: `${serverDomain}/user`,
         method: 'get'
@@ -55,8 +54,6 @@ const APIEndPoints = {
         url: `${serverDomain}/user/update-role`,
         method: 'post'
     },
-
-    // Recycle Bin
     get_deleted_users: {
         url: `${serverDomain}/user/bin/deleted`,
         method: 'get'

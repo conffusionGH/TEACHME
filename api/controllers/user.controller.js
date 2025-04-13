@@ -200,7 +200,7 @@ export const deleteUser = async (req, res, next) => {
 
 
 // Helper function for paginated results
-const getPaginatedResults = async (model, query, page = 1, limit = 10) => {
+const getPaginatedResults = async (model, query, page = 1, limit = 8) => {
   const startIndex = (page - 1) * limit;
   
   const results = await model.find(query)
@@ -224,7 +224,7 @@ const getPaginatedResults = async (model, query, page = 1, limit = 10) => {
 export const getAllUsers = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 8;
     let filter = { isDeleted: 1 };
 
     // Apply role-based filtering
@@ -265,10 +265,9 @@ export const getAllUsers = async (req, res, next) => {
 export const getManagers = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 8;
     const filter = { isDeleted: 1, roles: 'manager' };
 
-    console.log("Current user role:", req.user.roles); // Add this
 
 
     if (req.user.roles !== 'admin') {
@@ -297,7 +296,7 @@ export const getManagers = async (req, res, next) => {
 export const getTeachers = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 8;
     let filter = { isDeleted: 1, roles: 'teacher' };
 
     // Only admin and managers can view teachers
@@ -327,7 +326,7 @@ export const getTeachers = async (req, res, next) => {
 export const getStudents = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 8;
     let filter = { isDeleted: 1, roles: 'student' };
 
     // Teachers, managers and admin can view students
@@ -357,7 +356,7 @@ export const getStudents = async (req, res, next) => {
 export const getDeletedUsers = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 8;
 
     if (req.user.roles !== 'admin') {
       return next(errorHandler(403, 'Unauthorized to view deleted users'));

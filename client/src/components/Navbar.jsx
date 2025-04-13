@@ -21,18 +21,9 @@ const Navbar = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [darkMode, setDarkMode] = React.useState(false);
 
-  return (
+  return (  
     <ul className='flex gap-6 items-center'>
-      {/* <Link to='/'>
-        <li className='hidden sm:inline text-primary hover:text-secondary transition-colors'>
-          <FaHome className="inline mr-1" /> Home
-        </li>
-      </Link>
-      <Link to='/about'>
-        <li className='hidden sm:inline text-primary hover:text-secondary transition-colors'>
-          About
-        </li>
-      </Link> */}
+     
       
       {/* Dark Mode Toggle */}
       <motion.button 
