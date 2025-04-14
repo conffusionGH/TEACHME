@@ -6,6 +6,10 @@ import authRouter from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import cors from 'cors'; 
+import multerRouter from './routes/multer.route.js';
+import { fileURLToPath } from 'url';
+
+
 dotenv.config();
 
 const PORT = process.env.PORT || 8000;
@@ -33,7 +37,11 @@ console.log(PORT);
 
 
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+app.use('/api/assets/images', express.static(path.join(__dirname, 'assets/images')));
 
 
 // Database connection and server starting
@@ -46,6 +54,8 @@ connectDB().then(() => {
 
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/image', multerRouter);
+
 
 
 app.use(express.static(path.join(__dirname, '/client')));

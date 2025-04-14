@@ -69,7 +69,12 @@ const APIEndPoints = {
     clear_recycle_bin: {
         url: `${serverDomain}/user/bin/clear`,
         method: 'delete'
+    },
+    image_upload: {
+        url: `${serverDomain}/image/upload`,
+        method: 'POST'
     }
+
 }
 
 export default APIEndPoints;

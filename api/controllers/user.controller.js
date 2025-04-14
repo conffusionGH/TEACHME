@@ -4,6 +4,7 @@ import bcryptjs from 'bcryptjs';
 import User from '../models/user.model.js';
 import { errorHandler } from '../utils/error.js';
 
+
 // Helper function to check role hierarchy
 const canAccess = (viewerRole, targetRole) => {
   const hierarchy = {
@@ -21,26 +22,28 @@ export const test = (req, res) => {
   });
 };
 
+
+
 export const updateUser = async (req, res, next) => {
   try {
     const targetUser = await User.findById(req.params.id);
-    if (!targetUser) return next(errorHandler(404, 'User not found!'));
+    if (!targetUser) return next(errorHandler(404, 'User not found'));
 
-    // Check if current user can modify the target user
-    if (req.user.id !== req.params.id &&
-      !(req.user.roles === 'admin' ||
-        (req.user.roles === 'manager' && targetUser.roles !== 'admin') ||
-        (req.user.roles === 'teacher' && targetUser.roles === 'student'))) {
-      return next(errorHandler(403, 'Unauthorized to update this user'));
+    if (targetUser._id.toString() !== req.user.id) {
+      return next(errorHandler(403, 'You can only update your own profile'));
     }
 
     if (req.body.password) {
-      req.body.password = bcryptjs.hashSync(req.body.password, 10);
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
 
-    // Prevent role escalation unless admin
-    if (req.body.roles && req.user.roles !== 'admin') {
-      return next(errorHandler(403, 'Only admins can change roles'));
+    // Make sure to set full URL if avatar is updated
+    let avatar = targetUser.avatar;
+    if (req.body.avatar && !req.body.avatar.startsWith('http')) {
+      const serverDomain ='http://localhost:8000' || process.env.Server_DOMAIN;
+      avatar = `${serverDomain}${req.body.avatar}`;
+    } else if (req.body.avatar) {
+      avatar = req.body.avatar;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -50,8 +53,7 @@ export const updateUser = async (req, res, next) => {
           username: req.body.username,
           email: req.body.email,
           password: req.body.password,
-          avatar: req.body.avatar,
-          ...(req.user.roles === 'admin' && req.body.roles ? { roles: req.body.roles } : {}),
+          avatar,
         },
       },
       { new: true }
@@ -63,6 +65,8 @@ export const updateUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
 
 
 export const getUser = async (req, res, next) => {

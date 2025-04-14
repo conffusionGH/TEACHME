@@ -1,74 +1,46 @@
-import { useSelector } from 'react-redux';
-import { useRef, useState, useEffect } from 'react';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import ImageUpload from '../../components/ImageUpload.jsx';
 import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
-  deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  deleteUserFailure,
   signOutUserStart,
 } from '../../redux/user/userSlice';
-import { useDispatch } from 'react-redux';
-import axios from 'axios';
-import APIEndPoints from '../../middleware/ApiEndPoints';
-import { useNavigate } from 'react-router-dom';
-
-
+import APIEndPoints from '../../middleware/ApiEndPoints.jsx';
+import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const fileRef = useRef(null);
-  const { currentUser, loading, error } = useSelector((state) => state.user);
-  const [file, setFile] = useState(undefined);
-  const [filePerc, setFilePerc] = useState(0);
-  const [fileUploadError, setFileUploadError] = useState(false);
-  const [formData, setFormData] = useState({});
+  const { currentUser, loading } = useSelector((state) => state.user);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    avatar: '',
+    roles: ''
+  });
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
-
-  // API endpoints
-  const signOutUrl = APIEndPoints.sign_out;
-  const updateUserUrl = APIEndPoints.update_user;
-  const deleteUserUrl = APIEndPoints.delete_user;
-
-
-
-  console.log(signOutUrl)
-  console.log(updateUserUrl)
-  console.log(deleteUserUrl)
-  const navigate = useNavigate()
-
-
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (file) {
-      handleFileUpload(file);
+    if (currentUser) {
+      setFormData({
+        username: currentUser.username || '',
+        email: currentUser.email || '',
+        avatar: currentUser.avatar || '',
+        roles: currentUser.roles || ''
+      });
     }
-  }, [file]);
+  }, [currentUser]);
 
-  const handleFileUpload = (file) => {
-    const storage = getStorage(app);
-    const fileName = new Date().getTime() + file.name;
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setFilePerc(Math.round(progress));
-      },
-      (error) => {
-        setFileUploadError(true);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
-          setFormData({ ...formData, avatar: downloadURL })
-        );
-      }
-    );
+  const handleImageUpload = (imageUrl) => {
+    setFormData({ ...formData, avatar: imageUrl });
+    toast.success('Image uploaded successfully!');
   };
 
   const handleChange = (e) => {
@@ -80,146 +52,137 @@ export default function Profile() {
     try {
       dispatch(updateUserStart());
       const res = await axios({
-        url: `${updateUserUrl.url}/${currentUser._id}`,
-        method: updateUserUrl.method,
+        url: `${APIEndPoints.update_user.url}/${currentUser._id}`,
+        method: APIEndPoints.update_user.method,
         data: formData,
         withCredentials: true
       });
 
       if (res.data.success === false) {
+        toast.error(res.data.message);
         dispatch(updateUserFailure(res.data.message));
         return;
       }
 
+      toast.success('Profile updated successfully!');
       dispatch(updateUserSuccess(res.data));
       setUpdateSuccess(true);
     } catch (error) {
-      dispatch(updateUserFailure(error.message));
+      const errorMessage = error.response?.data?.message || error.message;
+      toast.error(errorMessage);
+      dispatch(updateUserFailure(errorMessage));
     }
   };
 
   const handleDeleteUser = async () => {
+    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
       dispatch(deleteUserStart());
       const res = await axios({
-        url: `${deleteUserUrl.url}/${currentUser._id}`,
-        method: deleteUserUrl.method,
-        withCredentials: true,
-
+        url: `${APIEndPoints.delete_user.url}/${currentUser._id}`,
+        method: APIEndPoints.delete_user.method,
+        withCredentials: true
       });
 
       if (res.data.success === false) {
+        toast.error(res.data.message);
         dispatch(deleteUserFailure(res.data.message));
         return;
       }
+
+      toast.success('Account deleted successfully');
       dispatch(deleteUserSuccess(res.data));
     } catch (error) {
-      dispatch(deleteUserFailure(error.message));
+      const errorMessage = error.response?.data?.message || error.message;
+      toast.error(errorMessage);
+      dispatch(deleteUserFailure(errorMessage));
     }
   };
 
   const handleSignOut = async () => {
-    if (!currentUser) return;
+    if (!window.confirm('Are you sure you want to sign Out ')) return;
     try {
       dispatch(signOutUserStart());
       const res = await axios({
-        url: signOutUrl.url,
-        method: signOutUrl.method
+        url: APIEndPoints.sign_out.url,
+        method: APIEndPoints.sign_out.method,
+        withCredentials: true
       });
-
-      if (res.data.success === false) {
-        dispatch(deleteUserFailure(res.data.message));
-        return;
-      }
+      toast.success('Signed out successfully');
       dispatch(deleteUserSuccess(res.data));
-      setFormData({});
       navigate('/');
     } catch (error) {
-      dispatch(deleteUserFailure(error.message));
+      const errorMessage = error.response?.data?.message || error.message;
+      toast.error(errorMessage);
+      dispatch(deleteUserFailure(errorMessage));
     }
   };
 
-
-
   return (
-    <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        <input
-          onChange={(e) => setFile(e.target.files[0])}
-          type='file'
-          ref={fileRef}
-          hidden
-          accept='image/*'
-        />
-        <img
-          onClick={() => fileRef.current.click()}
-          src={formData.avatar || currentUser.avatar}
-          alt='profile'
-          className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'
-        />
-        <p className='text-sm self-center'>
-          {fileUploadError ? (
-            <span className='text-red-700'>
-              Error Image upload (image must be less than 2 mb)
-            </span>
-          ) : filePerc > 0 && filePerc < 100 ? (
-            <span className='text-slate-700'>{`Uploading ${filePerc}%`}</span>
-          ) : filePerc === 100 ? (
-            <span className='text-green-700'>Image successfully uploaded!</span>
-          ) : (
-            ''
-          )}
-        </p>
-        <input
-          type='text'
-          placeholder='username'
-          defaultValue={currentUser.username}
-          id='username'
-          className='border p-3 rounded-lg'
-          onChange={handleChange}
-        />
-        <input
-          type='email'
-          placeholder='email'
-          id='email'
-          defaultValue={currentUser.email}
-          className='border p-3 rounded-lg'
-          onChange={handleChange}
-        />
-        <input
-          type='password'
-          placeholder='password'
-          onChange={handleChange}
-          id='password'
-          className='border p-3 rounded-lg'
-        />
-        <button
-          disabled={loading}
-          className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'
-        >
-          {loading ? 'Loading...' : 'Update'}
-        </button>
+    <div className="p-4 max-w-xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg border border-tertiary p-6 space-y-6">
+        <h1 className="text-3xl font-semibold text-primary text-center">My Profile</h1>
+        
+        <div className="flex justify-center">
+          <ImageUpload
+            onImageUpload={handleImageUpload}
+            currentImage={formData.avatar}
+          />
+        </div>
 
-      </form>
-      <div className='flex justify-between mt-5'>
-        <span
-          onClick={handleDeleteUser}
-          className='text-red-700 cursor-pointer'
-        >
-          Delete account
-        </span>
-        <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>
-          Sign out
-        </span>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Username"
+            id="username"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full border border-tertiary p-3 rounded-lg"
+          />
+
+          <input
+            type="email"
+            placeholder="Email"
+            id="email"
+            value={formData.email}
+            readOnly
+            className="w-full bg-gray-100 border border-tertiary p-3 rounded-lg text-gray-500 cursor-not-allowed"
+          />
+
+          <input
+            type="password"
+            placeholder="New Password"
+            id="password"
+            onChange={handleChange}
+            className="w-full border border-tertiary p-3 rounded-lg"
+          />
+
+          <input
+            type="text"
+            id="roles"
+            value={formData.roles.charAt(0).toUpperCase() + formData.roles.slice(1)}
+            readOnly
+            className="w-full bg-gray-100 border border-tertiary p-3 rounded-lg text-gray-500 cursor-not-allowed"
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-primary text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+          >
+            {loading ? 'Updating...' : 'Update Profile'}
+          </button>
+        </form>
+
+        <div className="flex justify-between pt-2 border-t border-tertiary mt-4 text-sm">
+          <span onClick={handleDeleteUser} className="text-error cursor-pointer hover:underline">
+            Delete Account
+          </span>
+          <span onClick={handleSignOut} className="text-error cursor-pointer hover:underline">
+            Sign Out
+          </span>
+        </div>
       </div>
-
-      <p className='text-red-700 mt-5'>{error ? error : ''}</p>
-      <p className='text-green-700 mt-5'>
-        {updateSuccess ? 'User is updated successfully!' : ''}
-      </p>
-
-
     </div>
   );
 }
