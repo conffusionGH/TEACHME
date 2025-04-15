@@ -1,0 +1,29 @@
+
+
+
+IN the dashboard: 
+1) Total number of students, teacher , managers, (tara manager ley chahi dhekhna mildainaw total number of manager)
+2) Total number of students who pay fee and who didnot pay fee
+3) Total earning in cureent year bhanda total number of students present in 6 months year.
+4) Students passed out 
+5) Total subjects and module 
+6) 
+
+Additional Features
+1)Attendance
+2)Routine 
+3)Calendar  
+4)Assignment(/submission/tracking)------------------------------------------------> COMPULSORY
+5)FEE management
+6)Upload materials----------------------------------------------------------------> COMPULSORY
+7)Notification (Assignment or any notes update notification)----------------------> COMPULSORY
+8)Search Functionality (for assignments and recorded session)---------------------> COMPULSORY
+
+
+Notes:
+1) I think we gonna face one more issues and that is when user upload image then the image wil be not deleted it will store so need to fixed that issues
+tara yo issues like advantage pni lina milxa like paxi future work yehi nai data lai recommendation ai halna mila pahila tero yo profile thiyo yo image 
+linxas ra bhanna?
+
+2)
+

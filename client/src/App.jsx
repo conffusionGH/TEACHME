@@ -13,6 +13,7 @@ import Teachers from './pages/RolesManagement/Teachers';
 import Students from './pages/RolesManagement/Students';
 import DeletedUsers from './pages/RecycleBin/DeletedUsers';
 import RolesIndustry from './pages/ManagementIndustry/RolesIndustry,';
+import EditUser from './pages/EditPage/EditUser';
 
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
               <Route path="/teachers" element={<Teachers />} />
               <Route path="/students" element={<Students />} />
               <Route path="/management/roles" element={<RolesIndustry />} />
+              <Route path="/edit-user/:id" element={<EditUser />} />
 
             </Route>
             <Route element={<RestrictedRoute allowedRoles={['admin']} />}>

@@ -1,3 +1,5 @@
+
+
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +26,7 @@ export default function Profile() {
     roles: ''
   });
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -49,13 +52,22 @@ export default function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!window.confirm('Are you sure you want to update your account?')) return;
+
     try {
       dispatch(updateUserStart());
       const res = await axios({
         url: `${APIEndPoints.update_user.url}/${currentUser._id}`,
         method: APIEndPoints.update_user.method,
         data: formData,
-        withCredentials: true
+        withCredentials: true,
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(percentCompleted);
+        }
       });
 
       if (res.data.success === false) {
@@ -71,6 +83,8 @@ export default function Profile() {
       const errorMessage = error.response?.data?.message || error.message;
       toast.error(errorMessage);
       dispatch(updateUserFailure(errorMessage));
+    } finally {
+      setUploadProgress(0);
     }
   };
 
@@ -122,13 +136,27 @@ export default function Profile() {
     <div className="p-4 max-w-xl mx-auto">
       <div className="bg-white rounded-2xl shadow-lg border border-tertiary p-6 space-y-6">
         <h1 className="text-3xl font-semibold text-primary text-center">My Profile</h1>
-        
+
         <div className="flex justify-center">
           <ImageUpload
             onImageUpload={handleImageUpload}
             currentImage={formData.avatar}
+            setUploadProgress={setUploadProgress}
           />
         </div>
+
+        {/* Upload progress bar */}
+        {uploadProgress > 0 && uploadProgress < 100 && (
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-primary h-2.5 rounded-full"
+              style={{ width: `${uploadProgress}%` }}
+            ></div>
+            <p className="text-sm text-center mt-1">
+              Uploading: {uploadProgress}%
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input

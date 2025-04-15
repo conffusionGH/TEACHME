@@ -3,6 +3,8 @@
 import bcryptjs from 'bcryptjs';
 import User from '../models/user.model.js';
 import { errorHandler } from '../utils/error.js';
+import { deleteImageFile, getLocalImageFilePath } from '../utils/deleteImage.js';
+
 
 
 // Helper function to check role hierarchy
@@ -29,33 +31,50 @@ export const updateUser = async (req, res, next) => {
     const targetUser = await User.findById(req.params.id);
     if (!targetUser) return next(errorHandler(404, 'User not found'));
 
-    if (targetUser._id.toString() !== req.user.id) {
-      return next(errorHandler(403, 'You can only update your own profile'));
+    // Check authorization based on roles
+    const isAdmin = req.user.roles === 'admin';
+    const isManager = req.user.roles === 'manager';
+    const isTeacher = req.user.roles === 'teacher';
+    const isStudent = req.user.roles === 'student';
+    const isSelfUpdate = targetUser._id.toString() === req.user.id;
+
+
+    if (!isSelfUpdate) {
+      if (isManager && targetUser.roles === 'admin') {
+        return next(errorHandler(403, 'Managers cannot update admin profiles'));
+      }
+      if (!isAdmin && !isManager) {
+        return next(errorHandler(403, 'You can only update your own profile'));
+      }
     }
 
+    // Prepare update data
+    const updateData = {
+      username: req.body.username,
+      email: req.body.email,
+      avatar: targetUser.avatar // Default to current avatar
+    };
+
+    // Handle password update if provided
     if (req.body.password) {
-      req.body.password = bcrypt.hashSync(req.body.password, 10);
+      updateData.password = bcrypt.hashSync(req.body.password, 10);
     }
 
-    // Make sure to set full URL if avatar is updated
-    let avatar = targetUser.avatar;
-    if (req.body.avatar && !req.body.avatar.startsWith('http')) {
-      const serverDomain ='http://localhost:8000' || process.env.Server_DOMAIN;
-      avatar = `${serverDomain}${req.body.avatar}`;
-    } else if (req.body.avatar) {
-      avatar = req.body.avatar;
+    // Handle avatar update
+    if (req.body.avatar) {
+      updateData.avatar = req.body.avatar.startsWith('http')
+        ? req.body.avatar
+        : `${process.env.SERVER_DOMAIN || 'http://localhost:8000'}${req.body.avatar}`;
+    }
+
+    // Only allow role updates by admin
+    if (req.body.roles && isAdmin) {
+      updateData.roles = req.body.roles;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      {
-        $set: {
-          username: req.body.username,
-          email: req.body.email,
-          password: req.body.password,
-          avatar,
-        },
-      },
+      { $set: updateData },
       { new: true }
     );
 
@@ -123,7 +142,7 @@ export const restoreUser = async (req, res, next) => {
 
     const restoredUser = await User.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         isDeleted: 1,
         deletedAt: null
       },
@@ -140,35 +159,70 @@ export const restoreUser = async (req, res, next) => {
   }
 };
 
+
+
 export const permanentDeleteUser = async (req, res, next) => {
   try {
-    // Only admin can permanently delete
     if (req.user.roles !== 'admin') {
       return next(errorHandler(403, 'Unauthorized to permanently delete users'));
     }
 
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
-    
-    if (!deletedUser) {
+    const user = await User.findById(req.params.id);
+    if (!user) {
       return next(errorHandler(404, 'User not found'));
     }
 
-    res.status(200).json('User permanently deleted');
+    // Delete the user's image if it exists locally
+    if (user.avatar && !user.avatar.includes('default')) {
+      try {
+        const imagePath = getLocalImageFilePath(user.avatar);
+        console.log(`Attempting to delete image at: ${imagePath}`);
+
+        const deletionSuccess = await deleteImageFile(imagePath);
+        if (!deletionSuccess) {
+          console.warn(`Image deletion failed for user ${user._id}`);
+        }
+      } catch (err) {
+        console.error(`Error during image deletion for user ${user._id}:`, err);
+      }
+    }
+
+    // Delete the user from database
+    await User.findByIdAndDelete(req.params.id);
+
+    res.status(200).json('User and associated image permanently deleted');
   } catch (error) {
+    console.error('Error in permanentDeleteUser:', error);
     next(error);
   }
 };
 
+
+
 export const clearRecycleBin = async (req, res, next) => {
   try {
-    // Only admin can clear recycle bin
     if (req.user.roles !== 'admin') {
       return next(errorHandler(403, 'Unauthorized to clear recycle bin'));
     }
 
+    const deletedUsers = await User.find({ isDeleted: 0 });
+    const deletionPromises = deletedUsers.map(async (user) => {
+      if (user.avatar && !user.avatar.includes('default')) {
+        try {
+          const imagePath = getLocalImageFilePath(user.avatar);
+          await deleteImageFile(imagePath);
+        } catch (err) {
+          console.error(`Image deletion failed for ${user._id}:`, err);
+        }
+      }
+    });
+
+    await Promise.all(deletionPromises);
     await User.deleteMany({ isDeleted: 0 });
-    res.status(200).json('Recycle bin cleared successfully');
+    
+    res.status(200).json('Recycle bin cleared (users + images deleted)');
   } catch (error) {
+    console.error('Recycle bin clearance failed:', error);
     next(error);
   }
 };
@@ -190,7 +244,7 @@ export const deleteUser = async (req, res, next) => {
     // Soft delete instead of actual delete
     await User.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         isDeleted: 0,
         deletedAt: new Date()
       }
@@ -206,7 +260,7 @@ export const deleteUser = async (req, res, next) => {
 // Helper function for paginated results
 const getPaginatedResults = async (model, query, page = 1, limit = 8) => {
   const startIndex = (page - 1) * limit;
-  
+
   const results = await model.find(query)
     .select('-password')
     .skip(startIndex)
