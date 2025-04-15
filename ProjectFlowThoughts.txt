@@ -10,14 +10,15 @@ IN the dashboard:
 6) 
 
 Additional Features
-1)Attendance
-2)Routine 
-3)Calendar  
-4)Assignment(/submission/tracking)------------------------------------------------> COMPULSORY
-5)FEE management
-6)Upload materials----------------------------------------------------------------> COMPULSORY
-7)Notification (Assignment or any notes update notification)----------------------> COMPULSORY
-8)Search Functionality (for assignments and recorded session)---------------------> COMPULSORY
+1)Attendance                                                                                    |
+2)Routine                                                                                       |
+3)Calendar                                                                                      |
+4)Assignment(/submission/tracking)------------------------------------------------> COMPULSORY  |
+5)FEE management                                                                                |
+6)Upload materials----------------------------------------------------------------> COMPULSORY  |
+7)Notification (Assignment or any notes update notification)----------------------> COMPULSORY  |
+8)Search Functionality (for assignments and recorded session)---------------------> COMPULSORY  |
+9)Role management-----------------------------------------------------------------> COMPULSORY  |  Done
 
 
 Notes:
