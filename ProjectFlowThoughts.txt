@@ -25,6 +25,7 @@ Additional Features
 8)Search Functionality (for assignments and recorded session)---------------------> COMPULSORY  |
 9)Role management-----------------------------------------------------------------> COMPULSORY  |  Done
 10)ID CARD                                                                                      |  
+11)If possible subject ko tyo code pani CRUD garauney-
 
 
 Notes:

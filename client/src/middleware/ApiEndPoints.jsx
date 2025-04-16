@@ -73,6 +73,42 @@ const APIEndPoints = {
     image_upload: {
         url: `${serverDomain}/image/upload`,
         method: 'POST'
+    },
+    create_subject: {
+        url: `${serverDomain}/subjects`,
+        method: 'POST'
+    },
+    get_subjects: {
+        url: `${serverDomain}/subjects`,
+        method: 'GET'
+    },
+    delete_subject: {
+        url: `${serverDomain}/subjects`,
+        method: 'DELETE'
+    },
+    get_deleted_subjects: {
+        url: `${serverDomain}/subjects/delete`,
+        method: 'GET'
+    },
+    restore_subject: {
+        url: `${serverDomain}/subjects/restore`,
+        method: 'DELETE'
+    },
+    permanent_delete_subject: {
+        url: `${serverDomain}/subjects/permanent`,
+        method: 'GET'
+    },
+    clear_subject_recycle_bin: {
+        url: `${serverDomain}/subjects/recycle-bin/clear`,
+        method: 'DELETE'
+    },
+    get_subject:{
+        url: `${serverDomain}/subjects`,
+        method:'GET'
+    },
+    update_subject:{
+        url: `${serverDomain}/subjects`,
+        method: 'PUT'
     }
 
 }

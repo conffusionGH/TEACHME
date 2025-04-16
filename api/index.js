@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import cors from 'cors'; 
 import multerRouter from './routes/multer.route.js';
+import subjectRouter from './routes/subjectroutes/subjects.route.js'
 import { fileURLToPath } from 'url';
 
 
@@ -55,6 +56,7 @@ connectDB().then(() => {
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/image', multerRouter);
+app.use('/api/subjects', subjectRouter)
 
 
 

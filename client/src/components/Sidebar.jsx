@@ -1,3 +1,5 @@
+
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,12 +10,12 @@ import {
   FaMoneyBillWave,
   FaBook,
   FaFileAlt,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaTrashAlt
 } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { deleteUserFailure, deleteUserSuccess, signOutUserStart } from '../redux/user/userSlice';
-import { FaTrashAlt } from 'react-icons/fa';
 import APIEndPoints from '../middleware/ApiEndPoints';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
@@ -22,30 +24,31 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
   const [openSections, setOpenSections] = useState({
     roles: false,
     management: false,
-    forms: false
+    forms: false,
+    recycleBin: false
   });
   const sidebarRef = useRef();
   const location = useLocation();
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  // Style variables
   const menuTitleActive = 'bg-primary/40 text-primary';
   const menuTitleInactive = 'hover:bg-tertiary text-primary';
   const subMenuActive = 'bg-tertiary text-primary';
   const subMenuInactive = 'hover:bg-tertiary text-primary';
 
   const signOutUrl = APIEndPoints.sign_out;
-  const canAccessSignUp = ['admin', 'manager'].includes(currentUser?.roles);
+  const canAccessForms = ['admin', 'manager'].includes(currentUser?.roles);
   const isAdmin = currentUser?.roles === 'admin';
 
-  // Auto-expand sections based on current route
   useEffect(() => {
     const path = location.pathname;
     setOpenSections({
       roles: path.includes('/managers') || path.includes('/teachers') || path.includes('/students'),
       management: path.includes('/management'),
-      forms: path.includes('/forms') || path.includes('/sign-up')
+      edit: path.includes('/subject-manage') || path.includes('/edit'),
+      forms: path.includes('/forms') || path.includes('/sign-up'),
+      recycleBin: path.includes('/recycle-bin')
     });
   }, [location.pathname]);
 
@@ -74,8 +77,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
   };
 
   const isActive = (path) => {
-    return location.pathname === path ||
-      (path !== '/' && location.pathname.startsWith(path));
+    return location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
   };
 
   const handleSignOut = async () => {
@@ -117,7 +119,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
         </AnimatePresence>
       )}
 
-      {/* Sidebar */}
       <AnimatePresence>
         {(isOpen || isPermanent) && (
           <motion.div
@@ -129,7 +130,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
             className={`fixed lg:relative inset-y-0 left-0 w-64 bg-white shadow-lg z-50 ${isPermanent ? 'lg:flex' : ''}`}
           >
             <div className="p-4 h-full flex flex-col">
-              {/* Header with close button */}
               <Link to='/'>
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-bold text-primary">Teach Me</h2>
@@ -145,7 +145,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                 </div>
               </Link>
 
-              {/* Menu Items */}
+              {/* Navigation Items */}
               <nav className="flex-grow overflow-y-auto">
                 <ul className="space-y-1">
                   <li>
@@ -179,33 +179,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           exit={{ opacity: 0, height: 0 }}
                           className="pl-10"
                         >
-                          <li>
-                            <Link
-                              to="/managers"
-                              className={`flex items-center p-3 rounded-lg ${isActive('/managers') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Managers
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              to="/teachers"
-                              className={`flex items-center p-3 rounded-lg ${isActive('/teachers') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Teachers
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              to="/students"
-                              className={`flex items-center p-3 rounded-lg ${isActive('/students') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Students
-                            </Link>
-                          </li>
+                          <li><Link to="/managers" className={`flex items-center p-3 rounded-lg ${isActive('/managers') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Managers</Link></li>
+                          <li><Link to="/teachers" className={`flex items-center p-3 rounded-lg ${isActive('/teachers') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Teachers</Link></li>
+                          <li><Link to="/students" className={`flex items-center p-3 rounded-lg ${isActive('/students') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Students</Link></li>
                         </motion.ul>
                       )}
                     </AnimatePresence>
@@ -231,103 +207,111 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           exit={{ opacity: 0, height: 0 }}
                           className="pl-10"
                         >
-                          <li>
-                            <Link
-                              to="/management/roles"
-                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/roles') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Roles
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              to="/management/fee"
-                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/fee') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Fee
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              to="/management/status"
-                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/status') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Status
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              to="/management/subjects"
-                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/subjects') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Subjects
-                            </Link>
-                          </li>
+                          <li><Link to="/management/roles" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/roles') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Roles</Link></li>
+                          <li><Link to="/management/fee" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/fee') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Fee</Link></li>
+                          <li><Link to="/management/status" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/status') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Status</Link></li>
+                          <li><Link to="/management/subjects" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/subjects') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subjects</Link></li>
                         </motion.ul>
                       )}
                     </AnimatePresence>
                   </li>
 
-                  {/* Forms Section */}
-                  <li>
-                    <button
-                      onClick={() => toggleSection('forms')}
-                      className={`flex items-center justify-between w-full p-3 rounded-lg ${openSections.forms ? menuTitleActive : menuTitleInactive}`}
-                    >
-                      <div className="flex items-center">
-                        <FaFileAlt className="mr-3" size={18} />
-                        Forms
-                      </div>
-                      {openSections.forms ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                    </button>
-                    <AnimatePresence>
-                      {openSections.forms && (
-                        <motion.ul
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="pl-10"
-                        >
-                          <li>
-                            <Link
-                              to="/forms/request"
-                              className={`flex items-center p-2 text-sm rounded-lg ${isActive('/forms/request') ? subMenuActive : subMenuInactive}`}
-                              onClick={handleLinkClick}
-                            >
-                              Request Form
-                            </Link>
-                          </li>
-                          {canAccessSignUp && (
+                  {/* Edit Section (Only for Admin & Manager) */}
+                  {canAccessForms && (
+                    <li>
+                      <button
+                        onClick={() => toggleSection('edit')}
+                        className={`flex items-center justify-between w-full p-3 rounded-lg ${openSections.edit ? menuTitleActive : menuTitleInactive}`}
+                      >
+                        <div className="flex items-center">
+                          <FaBook className="mr-3" size={18} />
+                          Edit
+                        </div>
+                        {openSections.edit ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                      </button>
+                      <AnimatePresence>
+                        {openSections.edit && (
+                          <motion.ul
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="pl-10"
+                          >
                             <li>
-                              <Link
-                                to="/sign-up"
-                                className={`flex items-center p-2 text-sm rounded-lg ${isActive('/sign-up') ? subMenuActive : subMenuInactive}`}
-                                onClick={handleLinkClick}
-                              >
-                                Signup Form
-                              </Link>
+                              <Link to="/subject-manage" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/subject-manage') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Manage Subject</Link>
                             </li>
-                          )}
-                        </motion.ul>
-                      )}
-                    </AnimatePresence>
-                  </li>
+                            <li>
+                              <Link to="/edit/module" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/edit/module') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment</Link>
+                            </li>
+                          </motion.ul>
+                        )}
+                      </AnimatePresence>
+                    </li>
+                  )}
 
-                  {/* Recycle Bin - Admin Only */}
+                  {/* Add Form (Only for Admin & Manager) */}
+                  {canAccessForms && (
+                    <li>
+                      <button
+                        onClick={() => toggleSection('forms')}
+                        className={`flex items-center justify-between w-full p-3 rounded-lg ${openSections.forms ? menuTitleActive : menuTitleInactive}`}
+                      >
+                        <div className="flex items-center">
+                          <FaFileAlt className="mr-3" size={18} />
+                          Add Form
+                        </div>
+                        {openSections.forms ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                      </button>
+                      <AnimatePresence>
+                        {openSections.forms && (
+                          <motion.ul
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="pl-10"
+                          >
+                            <li>
+                              <Link to="/sign-up" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/sign-up') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Signup Form</Link>
+                            </li>
+                            <li>
+                              <Link to="/subjectForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/subjectForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subject Form</Link>
+                            </li>
+                          </motion.ul>
+                        )}
+                      </AnimatePresence>
+                    </li>
+                  )}
+
+                  {/* Recycle Bin (Only for Admin) */}
                   {isAdmin && (
                     <li>
-                      <Link
-                        to="/recycle-bin"
-                        className={`flex items-center p-3 rounded-lg ${isActive('/recycle-bin') ? menuTitleActive : menuTitleInactive}`}
-                        onClick={handleLinkClick}
+                      <button
+                        onClick={() => toggleSection('recycleBin')}
+                        className={`flex items-center justify-between w-full p-3 rounded-lg ${openSections.recycleBin ? menuTitleActive : menuTitleInactive}`}
                       >
-                        <FaTrashAlt className="mr-3" size={18} />
-                        Recycle Bin
-                      </Link>
+                        <div className="flex items-center">
+                          <FaTrashAlt className="mr-3" size={18} />
+                          Recycle Bin
+                        </div>
+                        {openSections.recycleBin ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                      </button>
+                      <AnimatePresence>
+                        {openSections.recycleBin && (
+                          <motion.ul
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="pl-10"
+                          >
+                            <li>
+                              <Link to="/recycle-bin/users" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/users') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>User Bin</Link>
+                            </li>
+                            <li>
+                              <Link to="/recycle-bin/subjects" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/subjects') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subject Bin</Link>
+                            </li>
+                          </motion.ul>
+                        )}
+                      </AnimatePresence>
                     </li>
                   )}
 
@@ -345,7 +329,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                 </ul>
               </nav>
 
-              {/* Logout */}
+              {/* Sign Out */}
               <div className="mt-auto pt-2">
                 <button
                   onClick={handleSignOut}

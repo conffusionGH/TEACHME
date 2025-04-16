@@ -14,6 +14,10 @@ import Students from './pages/RolesManagement/Students';
 import DeletedUsers from './pages/RecycleBin/DeletedUsers';
 import RolesIndustry from './pages/ManagementIndustry/RolesIndustry,';
 import EditUser from './pages/EditPage/EditUser';
+import SubjectForm from './pages/Forms/SubjectForm';
+import Subjects from './pages/EditList/Subjects';
+import DeletedSubjects from './pages/RecycleBin/DeletedSubjects';
+import EditSubject from './pages/EditPage/EditSubject';
 
 
 export default function App() {
@@ -38,10 +42,17 @@ export default function App() {
               <Route path="/students" element={<Students />} />
               <Route path="/management/roles" element={<RolesIndustry />} />
               <Route path="/edit-user/:id" element={<EditUser />} />
+              <Route path="/subjectForm" element={<SubjectForm />} />
+              <Route path="/subject-manage" element={<Subjects />} />
+              <Route path="/edit-subject/:id" element={<EditSubject />} />
+              
+
 
             </Route>
             <Route element={<RestrictedRoute allowedRoles={['admin']} />}>
-              <Route path="/recycle-bin" element={<DeletedUsers />} />
+              <Route path="/recycle-bin/users" element={<DeletedUsers />} />
+              <Route path="/recycle-bin/subjects" element={<DeletedSubjects />} />
+
             </Route>
 
             {/* Add other protected routes here */}
