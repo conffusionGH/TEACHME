@@ -1,0 +1,1 @@
+// <reference types="nativewind/types" /> yeta 3 slash if it is not working at front-part

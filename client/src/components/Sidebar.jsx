@@ -277,7 +277,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                               <Link to="/subjectForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/subjectForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subject Form</Link>
                             </li>
                             <li>
-                              <Link to="/assignemntForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/assignemntForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment</Link>
+                              <Link to="/assignemntForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/assignemntForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment Form</Link>
                             </li>
                           </motion.ul>
                         )}
