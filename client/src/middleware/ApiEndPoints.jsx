@@ -42,14 +42,6 @@ const APIEndPoints = {
         url: `${serverDomain}/user`,
         method: 'get'
     },
-    update_user: {
-        url: `${serverDomain}/user/update`,
-        method: 'post'
-    },
-    delete_user: {
-        url: `${serverDomain}/user/delete`,
-        method: 'delete'
-    },
     update_user_role: {
         url: `${serverDomain}/user/update-role`,
         method: 'post'
@@ -102,14 +94,54 @@ const APIEndPoints = {
         url: `${serverDomain}/subjects/recycle-bin/clear`,
         method: 'DELETE'
     },
-    get_subject:{
+    get_subject: {
         url: `${serverDomain}/subjects`,
-        method:'GET'
+        method: 'GET'
     },
-    update_subject:{
+    update_subject: {
         url: `${serverDomain}/subjects`,
         method: 'PUT'
-    }
+    },
+    create_assignment: {
+        url: `${serverDomain}/assignment`,
+        method: 'POST'
+    },
+    get_all_subjects_no_pagination: {
+        url: `${serverDomain}/subjects/all`,
+        method: 'GET'
+    },
+    upload_assignment_pdf: {
+        url: `${serverDomain}/image/upload-pdf`,
+        method: 'POST'
+    },
+    get_assignments_paginated: {
+        url: `${serverDomain}/assignment/paginatedassignment`, // Use paginated endpoint
+        method: 'GET',
+    },
+    delete_assignment: {
+        url: `${serverDomain}/assignment`,
+        method: 'DELETE',
+    },
+    get_deleted_assignments: {
+        url: `${serverDomain}/assignment/bin/deleted`,
+        method: 'GET',
+    },
+    restore_assignment: {
+        url: `${serverDomain}/assignment/bin/restore`,
+        method: 'PUT',
+    },
+    permanent_delete_assignment: {
+        url: `${serverDomain}/assignment/bin/permanent`,
+        method: 'DELETE',
+    },
+    clear_assignment_recycle_bin: {
+        url: `${serverDomain}/assignment/bin/clear`,
+        method: 'DELETE',
+    },
+
+
+
+
 
 }
 

@@ -18,6 +18,9 @@ import SubjectForm from './pages/Forms/SubjectForm';
 import Subjects from './pages/EditList/Subjects';
 import DeletedSubjects from './pages/RecycleBin/DeletedSubjects';
 import EditSubject from './pages/EditPage/EditSubject';
+import AssignmentForm from './pages/Forms/AssignmentForm';
+import Assignments from './pages/EditList/Assignments';
+
 
 
 export default function App() {
@@ -26,6 +29,7 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/sign-in" element={<SignIn />} />
+        
 
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
@@ -33,6 +37,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/assignments" element={<Assignments />} />
+    
 
             {/* Restricted to admin/manager only */}
             <Route element={<RestrictedRoute allowedRoles={['admin', 'manager']} />}>
@@ -45,7 +51,10 @@ export default function App() {
               <Route path="/subjectForm" element={<SubjectForm />} />
               <Route path="/subject-manage" element={<Subjects />} />
               <Route path="/edit-subject/:id" element={<EditSubject />} />
-              
+              <Route path="/assignemntForm" element={<AssignmentForm />} />
+          
+
+
 
 
             </Route>

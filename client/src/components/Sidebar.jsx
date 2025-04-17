@@ -46,8 +46,8 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
     setOpenSections({
       roles: path.includes('/managers') || path.includes('/teachers') || path.includes('/students'),
       management: path.includes('/management'),
-      edit: path.includes('/subject-manage') || path.includes('/edit'),
-      forms: path.includes('/forms') || path.includes('/sign-up'),
+      edit: path.includes('/subject-manage') || path.includes('/assignments'),
+      forms: path.includes('/forms') || path.includes('/sign-up') || path.includes('/assignemntForm'),
       recycleBin: path.includes('/recycle-bin')
     });
   }, [location.pathname]);
@@ -241,7 +241,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                               <Link to="/subject-manage" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/subject-manage') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Manage Subject</Link>
                             </li>
                             <li>
-                              <Link to="/edit/module" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/edit/module') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment</Link>
+                              <Link to="/assignments" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/assignments') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment</Link>
                             </li>
                           </motion.ul>
                         )}
@@ -275,6 +275,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                             </li>
                             <li>
                               <Link to="/subjectForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/subjectForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subject Form</Link>
+                            </li>
+                            <li>
+                              <Link to="/assignemntForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/assignemntForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment</Link>
                             </li>
                           </motion.ul>
                         )}

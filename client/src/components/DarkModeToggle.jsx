@@ -4,23 +4,7 @@ import { FaSun, FaMoon } from 'react-icons/fa';
 
 const DarkModeToggle = () => {
   const [darkMode, setDarkMode] = React.useState()
-//     if (typeof window !== 'undefined') {
-//       const savedMode = localStorage.getItem('darkMode');
-//       if (savedMode !== null) return savedMode === 'true';
-//       return window.matchMedia('(prefers-color-scheme: dark)').matches;
-//     }
-//     return false;
-//   });
 
-//   useEffect(() => {
-//     if (darkMode) {
-//       document.documentElement.classList.add('dark');
-//       localStorage.setItem('darkMode', 'true');
-//     } else {
-//       document.documentElement.classList.remove('dark');
-//       localStorage.setItem('darkMode', 'false');
-//     }
-//   }, [darkMode]);
 
   return (
     <motion.button 

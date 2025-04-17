@@ -18,7 +18,7 @@ Additional Features
 1)Attendance                                                                                    |
 2)Routine                                                                                       |
 3)Calendar                                                                                      |
-4)Assignment(/submission/tracking)------------------------------------------------> COMPULSORY  |
+4)Assignment(/submission/tracking)------------------------------------------------> COMPULSORY  |  c
 5)FEE management                                                                                |
 6)Upload materials----------------------------------------------------------------> COMPULSORY  |
 7)Notification (Assignment or any notes update notification)----------------------> COMPULSORY  |
@@ -26,6 +26,15 @@ Additional Features
 9)Role management-----------------------------------------------------------------> COMPULSORY  |  Done
 10)ID CARD                                                                                      |  
 11)If possible subject ko tyo code pani CRUD garauney-
+
+
+4)almost completed need to add field that is pdf  uploading and time like 1pm, 2pm like that and the assignments is completed.
+
+4) ELLABORATE Features
+File uploads in submissions (e.g., PDF or images).
+Add feedback and grading from the teacher.
+Notification system for students on new assignments.
+Automatic status updates via a scheduled job if deadline passes.
 
 
 Notes:

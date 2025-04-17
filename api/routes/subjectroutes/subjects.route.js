@@ -9,7 +9,8 @@ import {
   restoreSubject,
   permanentDeleteSubject,
   clearSubjectRecycleBin,
-  getDeletedSubjects
+  getDeletedSubjects,
+  getAllSubjectsWithoutPagination
 } from '../../controllers/subjects/subjects.controller.js';
 import { uploadImage } from '../../controllers/multerImage.controller.js';
 
@@ -17,6 +18,7 @@ const router = express.Router();
 
 // router.post('/', uploadImage, handleImageUpload, createSubject);
 router.post('/', uploadImage, createSubject); 
+router.get('/all', getAllSubjectsWithoutPagination); 
 router.get('/', getAllSubjects);
 router.get('/delete', getDeletedSubjects);
 router.get('/search', searchSubjects);

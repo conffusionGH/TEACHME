@@ -348,3 +348,17 @@ export const getDeletedSubjects = async (req, res, next) => {
         next(error);
     }
 };
+
+
+export const getAllSubjectsWithoutPagination = async (req, res, next) => {
+    try {
+        const subjects = await Subject.find({ isDeleted: 1 });
+
+        res.status(200).json({
+            success: true,
+            data: subjects
+        });
+    } catch (error) {
+        next(error);
+    }
+};

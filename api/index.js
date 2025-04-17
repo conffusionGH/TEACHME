@@ -8,6 +8,8 @@ import path from 'path';
 import cors from 'cors'; 
 import multerRouter from './routes/multer.route.js';
 import subjectRouter from './routes/subjectroutes/subjects.route.js'
+import assignmentRouter from './routes/assignmentroutes/assignment.routes.js'
+import submissionRouter from './routes/assignmentroutes/submission.routes.js'
 import { fileURLToPath } from 'url';
 
 
@@ -17,6 +19,9 @@ const PORT = process.env.PORT || 8000;
 
 
 const ClientURL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+console.log(process.env.PORT)
+console.log( process.env.JWT_SECRET)
 
 
 
@@ -56,7 +61,9 @@ connectDB().then(() => {
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/image', multerRouter);
-app.use('/api/subjects', subjectRouter)
+app.use('/api/subjects', subjectRouter);
+app.use('/api/assignment', assignmentRouter);
+app.use('/api/submission', submissionRouter);
 
 
 
