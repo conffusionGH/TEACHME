@@ -5,12 +5,14 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { signInStart, signInSuccess, signInFailure } from '../../redux/userSlice.js';
+import APIEndPoints from '../../middleware/APIEndPoints.js';
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const { loading, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const signInAPIPOINTS = APIEndPoints.sign_in.url;
 
   const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -19,7 +21,7 @@ export default function Login() {
   const handleSubmit = async () => {
     try {
       dispatch(signInStart());
-      const response = await axios.post('http://localhost:8000/api/auth/signin', formData, {
+      const response = await axios.post(signInAPIPOINTS, formData, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       });

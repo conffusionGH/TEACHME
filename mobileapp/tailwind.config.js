@@ -3,13 +3,14 @@ module.exports = {
   presets: [require('nativewind/preset')],
   content: [
     "./App.{js,jsx,ts,tsx}",
-    "./screens/**"
+    "./screens/**",
+    "./components/**"
    
   ],
   theme: {
     extend: {
       colors: {
-        primary: '#3D3BF3',
+        primary: '#3D3BF3', 
         secondary: '#9694FF',
         tertiary: '#EBEAFF',
         error: '#FF2929',
