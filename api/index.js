@@ -48,6 +48,8 @@ const __dirname = path.dirname(__filename);
 
 
 app.use('/api/assets/images', express.static(path.join(__dirname, 'assets/images')));
+app.use('/api/assets/pdfs', express.static(path.join(__dirname, 'api/assets/pdfs')));
+
 
 
 // Database connection and server starting

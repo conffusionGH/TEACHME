@@ -312,6 +312,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                             <li>
                               <Link to="/recycle-bin/subjects" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/subjects') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subject Bin</Link>
                             </li>
+                            <li>
+                              <Link to="/recycle-bin/assignments" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/assignments') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment Bin</Link>
+                            </li>
                           </motion.ul>
                         )}
                       </AnimatePresence>

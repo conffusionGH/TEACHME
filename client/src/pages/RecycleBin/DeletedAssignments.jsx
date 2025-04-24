@@ -1,79 +1,86 @@
-
-
-import { useState, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import ReactPaginate from 'react-paginate';
-import { FaEdit, FaTrash, FaBook, FaDownload } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { FaTrashRestore, FaTrash, FaBook, FaDownload } from 'react-icons/fa';
+import APIEndPoints from '../../middleware/ApiEndPoints';
 
-const AssignmentList = ({ apiEndpoint, deleteEndpoint, downloadEndpoint }) => {
+const DeletedAssignments = () => {
   const [assignments, setAssignments] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalAssignments, setTotalAssignments] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const { currentUser } = useSelector((state) => state.user);
 
-  const fetchAssignments = async (page = 1) => {
+  const apiDeletedAssignments = APIEndPoints.get_deleted_assignments.url;
+  const apiRestoreAssignment = APIEndPoints.restore_assignment.url;
+  const apiPermanentDelete = APIEndPoints.permanent_delete_assignment.url;
+  const apiClearRecycleBin = APIEndPoints.clear_assignment_recycle_bin.url;
+  const apiDownloadAssignment = APIEndPoints.download_assignment.url;
+
+  const fetchDeletedAssignments = async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${apiEndpoint}?page=${page}&limit=10`, {
+
+      const res = await axios.get(`${apiDeletedAssignments}?page=${page}&limit=10`, {
         withCredentials: true,
       });
 
-      let assignmentsData = response.data.assignments || [];
-
-      // Filter assignments based on user role
-      if (currentUser?.roles === 'teacher') {
-        assignmentsData = assignmentsData.filter(
-          (assignment) => assignment.educator._id === currentUser._id
-        );
-      } else if (currentUser?.roles === 'student') {
-        assignmentsData = assignmentsData.filter(
-          (assignment) => !assignment.isDeleted
-        );
-      }
-
-      setAssignments(assignmentsData);
-      setCurrentPage(response.data.currentPage ? response.data.currentPage - 1 : 0);
-      setTotalPages(response.data.totalPages || 0);
-      setTotalAssignments(response.data.totalAssignments || assignmentsData.length);
+      const data = res.data || {};
+      setAssignments(data.assignments || []);
+      setCurrentPage(data.currentPage ? data.currentPage - 1 : 0);
+      setTotalPages(data.totalPages || 0);
+      setTotalAssignments(data.totalAssignments || 0);
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to fetch assignments');
-      toast.error(error.response?.data?.message || 'Failed to fetch assignments');
+      setError(error.response?.data?.message || 'Failed to fetch deleted assignments');
+      toast.error(error.response?.data?.message || 'Failed to fetch deleted assignments');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAssignments(1);
-  }, [apiEndpoint, currentUser?.roles]);
+    fetchDeletedAssignments(1);
+  }, []);
 
   const handlePageClick = (data) => {
-    const selectedPage = data.selected + 1;
-    fetchAssignments(selectedPage);
+    fetchDeletedAssignments(data.selected + 1);
   };
 
-  const handleEdit = (assignmentId) => {
-    navigate(`/edit-assignment/${assignmentId}`);
-  };
-
-  const handleDelete = async (assignmentId) => {
-    if (window.confirm('Are you sure you want to delete this assignment?')) {
+  const handleRestore = async (assignmentId) => {
+    if (window.confirm('Are you sure you want to restore this assignment?')) {
       try {
-        await axios.delete(`${deleteEndpoint}/${assignmentId}`, {
-          withCredentials: true,
-        });
-        toast.success('Assignment deleted successfully');
-        fetchAssignments(currentPage + 1);
+        await axios.put(`${apiRestoreAssignment}/${assignmentId}`, {}, { withCredentials: true });
+        toast.success('Assignment restored successfully');
+        fetchDeletedAssignments(currentPage + 1);
       } catch (error) {
-        toast.error(error.response?.data?.message || 'Failed to delete assignment');
+        toast.error(error.response?.data?.message || 'Failed to restore assignment');
+      }
+    }
+  };
+
+  const handlePermanentDelete = async (assignmentId) => {
+    if (window.confirm('Are you sure you want to permanently delete this assignment? This action cannot be undone!')) {
+      try {
+        await axios.delete(`${apiPermanentDelete}/${assignmentId}`, { withCredentials: true });
+        toast.success('Assignment permanently deleted');
+        fetchDeletedAssignments(currentPage + 1);
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Failed to permanently delete assignment');
+      }
+    }
+  };
+
+  const handleClearAll = async () => {
+    if (window.confirm('Are you sure you want to permanently delete ALL assignments in the recycle bin? This action cannot be undone!')) {
+      try {
+        await axios.delete(apiClearRecycleBin, { withCredentials: true });
+        toast.success('Recycle bin cleared successfully');
+        fetchDeletedAssignments(1);
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Failed to clear recycle bin');
       }
     }
   };
@@ -81,27 +88,20 @@ const AssignmentList = ({ apiEndpoint, deleteEndpoint, downloadEndpoint }) => {
   const handleDownloadPDF = async (assignmentId, assignmentTitle) => {
     try {
       const response = await axios.get(
-        `${downloadEndpoint}/${assignmentId}`,
+        `${apiDownloadAssignment}/${assignmentId}`,
         {
           responseType: 'blob',
           withCredentials: true,
         }
       );
 
-      // Create a blob from the response data
       const blob = new Blob([response.data], { type: 'application/pdf' });
-
-      // Create a temporary URL for the blob
       const url = window.URL.createObjectURL(blob);
-
-      // Create a temporary link element to trigger the download
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${assignmentTitle}.pdf`; // Set the filename for download
+      link.download = `${assignmentTitle}.pdf`;
       document.body.appendChild(link);
       link.click();
-
-      // Clean up
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
@@ -130,10 +130,21 @@ const AssignmentList = ({ apiEndpoint, deleteEndpoint, downloadEndpoint }) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-tertiary">
-        <div className="px-6 py-4 bg-secondary">
+        <div className="px-6 py-4 bg-secondary flex justify-between items-center">
           <h2 className="text-xl font-semibold text-primary">
-            Assignments ({totalAssignments})
+            Assignment Recycle Bin ({totalAssignments})
           </h2>
+          <button
+            onClick={handleClearAll}
+            disabled={totalAssignments === 0}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              totalAssignments === 0
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-error text-white hover:bg-error/90 shadow-md hover:shadow-lg'
+            }`}
+          >
+            Clear All
+          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -149,7 +160,7 @@ const AssignmentList = ({ apiEndpoint, deleteEndpoint, downloadEndpoint }) => {
                 <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
                   Deadline
                 </th>
-                <th className="px-6 py-3 text-left text-sm font  text-sm font-medium text-primary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
                   Educator
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
@@ -197,35 +208,28 @@ const AssignmentList = ({ apiEndpoint, deleteEndpoint, downloadEndpoint }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {assignment.educator?.username || 'N/A'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                      {(currentUser?.roles === 'admin' ||
-                        currentUser?.roles === 'manager' ||
-                        (currentUser?.roles === 'teacher' &&
-                          assignment.educator._id === currentUser._id)) && (
-                        <>
-                          <button
-                            onClick={() => handleEdit(assignment._id)}
-                            className="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 shadow-md hover:shadow-lg transition-all"
-                            title="Edit"
-                          >
-                            <FaEdit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(assignment._id)}
-                            className="bg-error text-white p-2 rounded-lg hover:bg-error/90 shadow-md hover:shadow-lg transition-all"
-                            title="Delete"
-                          >
-                            <FaTrash className="h-4 w-4" />
-                          </button>
-                        </>
-                      )}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        onClick={() => handleRestore(assignment._id)}
+                        className="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 shadow-md hover:shadow-lg transition-all"
+                        title="Restore"
+                      >
+                        <FaTrashRestore className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handlePermanentDelete(assignment._id)}
+                        className="bg-error text-white p-2 rounded-lg hover:bg-error/90 shadow-md hover:shadow-lg transition-all"
+                        title="Permanently Delete"
+                      >
+                        <FaTrash className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
-                    No assignments found
+                    Recycle bin is empty
                   </td>
                 </tr>
               )}
@@ -246,9 +250,9 @@ const AssignmentList = ({ apiEndpoint, deleteEndpoint, downloadEndpoint }) => {
               containerClassName={'flex justify-center space-x-2'}
               pageClassName={'rounded-lg border border-tertiary hover:bg-secondary/20'}
               pageLinkClassName={'text-primary px-3 py-2'}
-              activeClassName={'bg-secondary'}
-              previousClassName={'px-3 py-1 rounded-lg border border-tertiary bg-secondary/20 hover:bg-primary/20'}
-              nextClassName={'px-3 py-1 rounded-lg border border-tertiary bg-secondary/20 hover:bg-primary/20'}
+              activeClassName={'bg-primary text-white'}
+              previousClassName={'px-3 py-1 rounded-lg border border-tertiary hover:bg-secondary/20'}
+              nextClassName={'px-3 py-1 rounded-lg border border-tertiary hover:bg-secondary/20'}
               disabledClassName={'opacity-50 cursor-not-allowed'}
               forcePage={currentPage}
             />
@@ -259,4 +263,4 @@ const AssignmentList = ({ apiEndpoint, deleteEndpoint, downloadEndpoint }) => {
   );
 };
 
-export default AssignmentList;
+export default DeletedAssignments;

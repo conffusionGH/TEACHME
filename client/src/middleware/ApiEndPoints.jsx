@@ -138,6 +138,18 @@ const APIEndPoints = {
         url: `${serverDomain}/assignment/bin/clear`,
         method: 'DELETE',
     },
+    download_assignment: {
+        url: `${serverDomain}/assignment/download`,
+        method: 'get'
+    },
+    update_assignment: {
+        url: `${serverDomain}/assignment`,
+        method: 'put'
+    },
+    get_assignment:{
+        url: `${serverDomain}/assignment`,
+        method: 'get'
+    }
 
 
 

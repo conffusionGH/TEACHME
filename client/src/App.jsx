@@ -20,6 +20,8 @@ import DeletedSubjects from './pages/RecycleBin/DeletedSubjects';
 import EditSubject from './pages/EditPage/EditSubject';
 import AssignmentForm from './pages/Forms/AssignmentForm';
 import Assignments from './pages/EditList/Assignments';
+import DeletedAssignments from './pages/RecycleBin/DeletedAssignments';
+import EditAssignment from './pages/EditPage/EditAssignment';
 
 
 
@@ -52,6 +54,7 @@ export default function App() {
               <Route path="/subject-manage" element={<Subjects />} />
               <Route path="/edit-subject/:id" element={<EditSubject />} />
               <Route path="/assignemntForm" element={<AssignmentForm />} />
+              <Route path="/edit-assignment/:id" element={<EditAssignment />} />
           
 
 
@@ -61,6 +64,7 @@ export default function App() {
             <Route element={<RestrictedRoute allowedRoles={['admin']} />}>
               <Route path="/recycle-bin/users" element={<DeletedUsers />} />
               <Route path="/recycle-bin/subjects" element={<DeletedSubjects />} />
+              <Route path="/recycle-bin/assignments" element={<DeletedAssignments />} />
 
             </Route>
 
