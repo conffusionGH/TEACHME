@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
       roles: path.includes('/managers') || path.includes('/teachers') || path.includes('/students'),
       management: path.includes('/management'),
       edit: path.includes('/subject-manage') || path.includes('/assignments'),
-      forms: path.includes('/forms') || path.includes('/sign-up') || path.includes('/assignemntForm'),
+      forms: path.includes('/forms') || path.includes('/sign-up') || path.includes('/subjectForm') || path.includes('/assignemntForm'),
       recycleBin: path.includes('/recycle-bin')
     });
   }, [location.pathname]);

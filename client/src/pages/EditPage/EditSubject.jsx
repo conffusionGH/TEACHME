@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import APIEndPoints from '../../middleware/ApiEndPoints';
 import ImageUpload from '../../components/ImageUpload';
+import VideoUpload from '../../components/VideoUpload';
 
 const EditSubject = () => {
   const { id } = useParams();
@@ -14,27 +15,35 @@ const EditSubject = () => {
     code: '',
     description: '',
     image: '',
+    video: '',
     creditHours: 3,
-    isActive: true
+    isActive: true,
   });
 
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
 
   useEffect(() => {
     const fetchSubject = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${APIEndPoints.get_subject.url}/${id}`);
+        const response = await axios.get(`${APIEndPoints.get_subject.url}/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adjust based on your auth setup
+          },
+        });
         const subject = response.data;
+        console.log(subject);
 
         setFormData({
           name: subject.name,
           code: subject.code,
           description: subject.description || '',
           image: subject.image,
+          video: subject.video || '',
           creditHours: subject.creditHours,
-          isActive: subject.isActive
+          isActive: subject.isActive,
         });
       } catch (error) {
         toast.error(error.response?.data?.message || 'Failed to fetch subject');
@@ -52,12 +61,17 @@ const EditSubject = () => {
     toast.success('Image uploaded successfully!');
   };
 
+  const handleVideoUpload = (videoUrl) => {
+    setFormData((prev) => ({ ...prev, video: videoUrl }));
+    toast.success('Video uploaded successfully!');
+  };
+
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [id]: type === 'checkbox' ? checked : value
+      [id]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -67,12 +81,31 @@ const EditSubject = () => {
 
     try {
       setLoading(true);
-      const updateData = { ...formData };
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('code', formData.code);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('creditHours', formData.creditHours);
+      formDataToSend.append('isActive', formData.isActive);
+
+      // Append image and video files if they are File objects
+      if (formData.image && typeof formData.image === 'object') {
+        formDataToSend.append('image', formData.image);
+      }
+      if (formData.video && typeof formData.video === 'object') {
+        formDataToSend.append('video', formData.video);
+      }
 
       const response = await axios.put(
         `${APIEndPoints.update_subject.url}/${id}`,
-        updateData,
-        { withCredentials: true }
+        formDataToSend,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adjust based on your auth setup
+          },
+          withCredentials: true,
+        }
       );
 
       toast.success('Subject updated successfully');
@@ -172,7 +205,7 @@ const EditSubject = () => {
               </div>
             </div>
 
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center space-y-4">
               <ImageUpload
                 onImageUpload={handleImageUpload}
                 currentImage={formData.image}
@@ -180,6 +213,14 @@ const EditSubject = () => {
               />
               {imageUploading && (
                 <p className="text-sm text-gray-500 mt-2">Uploading image...</p>
+              )}
+              <VideoUpload
+                onVideoUpload={handleVideoUpload}
+                currentVideo={formData.video}
+                setUploading={setVideoUploading}
+              />
+              {videoUploading && (
+                <p className="text-sm text-gray-500 mt-2">Uploading video...</p>
               )}
             </div>
           </div>
@@ -194,7 +235,7 @@ const EditSubject = () => {
             </button>
             <button
               type="submit"
-              disabled={loading || imageUploading}
+              disabled={loading || imageUploading || videoUploading}
               className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save Changes'}

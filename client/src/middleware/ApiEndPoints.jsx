@@ -14,6 +14,8 @@ const APIEndPoints = {
         url: `${serverDomain}/auth/signout`,
         method: 'get'
     },
+
+    //user handling
     update_user: {
         url: `${serverDomain}/user/update`,
         method: 'post'
@@ -26,10 +28,14 @@ const APIEndPoints = {
         url: `${serverDomain}/user`,
         method: 'get'
     },
+
+    //managers
     get_managers: {
         url: `${serverDomain}/user/managers`,
         method: 'get'
     },
+
+    //teachers
     get_teachers: {
         url: `${serverDomain}/user/teachers`,
         method: 'get'
@@ -62,8 +68,14 @@ const APIEndPoints = {
         url: `${serverDomain}/user/bin/clear`,
         method: 'delete'
     },
+
+    // upload
     image_upload: {
         url: `${serverDomain}/image/upload`,
+        method: 'POST'
+    },
+    video_upload: {
+        url: `${serverDomain}/image/upload-video`,
         method: 'POST'
     },
     create_subject: {
@@ -146,7 +158,7 @@ const APIEndPoints = {
         url: `${serverDomain}/assignment`,
         method: 'put'
     },
-    get_assignment:{
+    get_assignment: {
         url: `${serverDomain}/assignment`,
         method: 'get'
     }

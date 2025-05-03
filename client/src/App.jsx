@@ -31,7 +31,7 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/sign-in" element={<SignIn />} />
-        
+
 
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
@@ -40,7 +40,7 @@ export default function App() {
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/assignments" element={<Assignments />} />
-    
+
 
             {/* Restricted to admin/manager only */}
             <Route element={<RestrictedRoute allowedRoles={['admin', 'manager']} />}>
@@ -50,12 +50,12 @@ export default function App() {
               <Route path="/students" element={<Students />} />
               <Route path="/management/roles" element={<RolesIndustry />} />
               <Route path="/edit-user/:id" element={<EditUser />} />
-              <Route path="/subjectForm" element={<SubjectForm />} />
               <Route path="/subject-manage" element={<Subjects />} />
               <Route path="/edit-subject/:id" element={<EditSubject />} />
+              <Route path="/subjectForm" element={<SubjectForm />} />
               <Route path="/assignemntForm" element={<AssignmentForm />} />
               <Route path="/edit-assignment/:id" element={<EditAssignment />} />
-          
+
 
 
 

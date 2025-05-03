@@ -45,3 +45,28 @@ linxas ra bhanna?
 2)Premium features for new features 
 1) Search function for admin
 
+
+//subjects
+1) blank after succesfully subject creation
+2) image ra video file name ko preview 
+3) edit photo already there , edit video remains
+4) pdf
+
+
+upto to now need to finish all react native work .
+
+upload garney bela  
+download hunxa subbjects ma 
+video download garney milney
+
+video 
+
+
+assignments get 
+
+
+
+
+//notification
+
+

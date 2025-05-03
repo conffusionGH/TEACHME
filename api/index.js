@@ -5,7 +5,7 @@ import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import cors from 'cors'; 
+import cors from 'cors';
 import multerRouter from './routes/multer.route.js';
 import subjectRouter from './routes/subjectroutes/subjects.route.js'
 import assignmentRouter from './routes/assignmentroutes/assignment.routes.js'
@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 8000;
 const ClientURL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 console.log(process.env.PORT)
-console.log( process.env.JWT_SECRET)
+console.log(process.env.JWT_SECRET)
 
 
 
@@ -29,13 +29,15 @@ const app = express();
 
 // Middleware Setup
 app.use(cors({
-  origin: ClientURL, 
-  credentials: true, 
+  origin: ClientURL,
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 
 app.use(cookieParser());
 
@@ -49,6 +51,8 @@ const __dirname = path.dirname(__filename);
 
 app.use('/api/assets/images', express.static(path.join(__dirname, 'assets/images')));
 app.use('/api/assets/pdfs', express.static(path.join(__dirname, 'api/assets/pdfs')));
+app.use('/api/assets/videos', express.static(path.join(__dirname, 'api/assets/videos')));
+
 
 
 
@@ -56,6 +60,7 @@ app.use('/api/assets/pdfs', express.static(path.join(__dirname, 'api/assets/pdfs
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log("Server is running on port", PORT);
+    // server.timeout = 30 * 60 * 1000; // 30 minutes timeout
     console.log("Connected to the database");
   });
 });

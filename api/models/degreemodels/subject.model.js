@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-
 const subjectSchema = new mongoose.Schema({
   name: { 
     type: String, 
@@ -17,6 +16,9 @@ const subjectSchema = new mongoose.Schema({
   image: {
     type: String,
     default: "https://play-lh.googleusercontent.com/2kD49Sc5652DmjJNf7Kh17DEXx9HiD2Zz3LsNc6929yTW6VBbGBCr-CQLoOA7iUf6hk"
+  },
+  video: {
+    type: String // URL to the uploaded video
   },
   creditHours: {
     type: Number,

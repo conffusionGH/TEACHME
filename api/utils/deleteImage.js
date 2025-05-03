@@ -29,4 +29,3 @@ export const getLocalImageFilePath = (url) => {
   console.log(`Resolved file path: ${fullPath}`); // Debug logging
   return fullPath;
 };
-
