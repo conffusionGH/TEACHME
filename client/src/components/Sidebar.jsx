@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
       roles: path.includes('/managers') || path.includes('/teachers') || path.includes('/students'),
       management: path.includes('/management'),
       edit: path.includes('/subject-manage') || path.includes('/assignments'),
-      forms: path.includes('/forms') || path.includes('/sign-up') || path.includes('/subjectForm') || path.includes('/assignemntForm'),
+      forms: path.includes('/forms') || path.includes('/sign-up') || path.includes('/subjectForm') || path.includes('/assignemntForm') || path.includes('/requestForm'),
       recycleBin: path.includes('/recycle-bin')
     });
   }, [location.pathname]);
@@ -278,6 +278,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                             </li>
                             <li>
                               <Link to="/assignemntForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/assignemntForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment Form</Link>
+                            </li>
+                            <li>
+                              <Link to="/requestForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/requestForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Request Form</Link>
                             </li>
                           </motion.ul>
                         )}

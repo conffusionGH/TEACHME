@@ -22,6 +22,7 @@ import AssignmentForm from './pages/Forms/AssignmentForm';
 import Assignments from './pages/EditList/Assignments';
 import DeletedAssignments from './pages/RecycleBin/DeletedAssignments';
 import EditAssignment from './pages/EditPage/EditAssignment';
+import RequestForm from './pages/Forms/RequestForm';
 
 
 
@@ -55,6 +56,8 @@ export default function App() {
               <Route path="/subjectForm" element={<SubjectForm />} />
               <Route path="/assignemntForm" element={<AssignmentForm />} />
               <Route path="/edit-assignment/:id" element={<EditAssignment />} />
+              <Route path="/requestForm" element={<RequestForm />} />
+
 
 
 
@@ -65,7 +68,6 @@ export default function App() {
               <Route path="/recycle-bin/users" element={<DeletedUsers />} />
               <Route path="/recycle-bin/subjects" element={<DeletedSubjects />} />
               <Route path="/recycle-bin/assignments" element={<DeletedAssignments />} />
-
             </Route>
 
             {/* Add other protected routes here */}

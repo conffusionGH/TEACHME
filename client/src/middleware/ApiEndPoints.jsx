@@ -161,7 +161,52 @@ const APIEndPoints = {
     get_assignment: {
         url: `${serverDomain}/assignment`,
         method: 'get'
+    },
+
+
+
+    //requestForm
+    request_form_create: {
+        url: `${serverDomain}/request-form`,
+        method: 'POST'
+    },
+    // get_all_request_forms: {
+    //     url: `${serverDomain}/request-form`,
+    //     method: 'GET'
+    // },
+    // get_request_form: {
+    //     url: `${serverDomain}/request-form`,
+    //     method: 'GET'
+    // },
+    update_request_form: {
+        url: `${serverDomain}/request-form/update`,
+        method: 'PUT'
+    },
+    delete_request_form: {
+        url: `${serverDomain}/request-form/delete`,
+        method: 'DELETE'
+    },
+    get_deleted_request_forms: {
+        url: `${serverDomain}/request-form/bin/deleted`,
+        method: 'GET'
+    },
+    restore_request_form: {
+        url: `${serverDomain}/request-form/bin/restore`,
+        method: 'PUT'
+    },
+    restore_all_request_forms: {
+        url: `${serverDomain}/request-form/bin/restore-all`,
+        method: 'PUT'
+    },
+    permanent_delete_request_form: {
+        url: `${serverDomain}/request-form/bin/permanent`,
+        method: 'DELETE'
+    },
+    clear_request_form_recycle_bin: {
+        url: `${serverDomain}/request-form/bin/clear`,
+        method: 'DELETE'
     }
+
 
 
 

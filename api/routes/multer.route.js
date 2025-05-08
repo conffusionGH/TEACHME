@@ -5,12 +5,14 @@ import { uploadImage, handleImageUpload } from '../controllers/multerImage.contr
 import { uploadPDF, handlePDFUpload } from '../controllers/mutlerwork/multerPDF.controller.js';
 import { handleVideoUpload, uploadVideo } from '../controllers/mutlerwork/multerVideo.controller.js';
 
-import { verifyToken } from '../utils/verifyUser.js';
+import {  } from '../utils/verifyUser.js';
 
 const router = express.Router();
 
-router.post('/upload', verifyToken, uploadImage, handleImageUpload);
-router.post('/upload-pdf', verifyToken, uploadPDF, handlePDFUpload);
-router.post('/upload-video', verifyToken, uploadVideo, handleVideoUpload);
+router.post('/upload',  uploadImage, handleImageUpload);
+router.post('/upload-pdf',  uploadPDF, handlePDFUpload);
+router.post('/upload-video',  uploadVideo, handleVideoUpload);
+
+// verifyToken
 
 export default router;
