@@ -178,14 +178,14 @@ const APIEndPoints = {
         url: `${serverDomain}/request-form`,
         method: 'POST'
     },
-    // get_all_request_forms: {
-    //     url: `${serverDomain}/request-form`,
-    //     method: 'GET'
-    // },
-    // get_request_form: {
-    //     url: `${serverDomain}/request-form`,
-    //     method: 'GET'
-    // },
+    get_all_request_forms: {
+        url: `${serverDomain}/request-form`,
+        method: 'GET'
+    },
+    get_request_form: {
+        url: `${serverDomain}/request-form`,
+        method: 'GET'
+    },
     update_request_form: {
         url: `${serverDomain}/request-form/update`,
         method: 'PUT'

@@ -23,6 +23,7 @@ import Assignments from './pages/EditList/Assignments';
 import DeletedAssignments from './pages/RecycleBin/DeletedAssignments';
 import EditAssignment from './pages/EditPage/EditAssignment';
 import RequestForm from './pages/Forms/RequestForm';
+import RequestFormIndustry from './pages/ManagementIndustry/RequestFormIndustry';
 
 
 
@@ -57,6 +58,7 @@ export default function App() {
               <Route path="/assignemntForm" element={<AssignmentForm />} />
               <Route path="/edit-assignment/:id" element={<EditAssignment />} />
               <Route path="/requestForm" element={<RequestForm />} />
+              <Route path="/management/request-form" element={<RequestFormIndustry />} />
 
 
 
@@ -67,7 +69,7 @@ export default function App() {
             <Route element={<RestrictedRoute allowedRoles={['admin']} />}>
               <Route path="/recycle-bin/users" element={<DeletedUsers />} />
               <Route path="/recycle-bin/subjects" element={<DeletedSubjects />} />
-              <Route path="/recycle-bin/assignments" element={<DeletedAssignments />} />
+              <Route path="/recycle-bin/assignments-bin" element={<DeletedAssignments />} />
             </Route>
 
             {/* Add other protected routes here */}
