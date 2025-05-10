@@ -2,12 +2,14 @@ import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator } fr
 import React, { useEffect, useState } from 'react';
 import APIEndPoints from '../../middleware/APIEndPoints';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SubjectScreen() {
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const getSubjectsAPI = APIEndPoints.get_subjects.url;
+    const navigation = useNavigation();
 
     const fetchSubjects = async () => {
         try {
@@ -78,6 +80,7 @@ export default function SubjectScreen() {
                         key={subject._id}
                         className="bg-white rounded-lg shadow-sm overflow-hidden border border-secondary/20"
                         activeOpacity={0.9}
+                        onPress={() => navigation.navigate('SubjectDetail', { subject })}
                     >
                         <View className="flex-row">
                             <Image

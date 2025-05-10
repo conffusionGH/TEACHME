@@ -10,10 +10,14 @@ import {
   permanentDeleteSubject,
   clearSubjectRecycleBin,
   getDeletedSubjects,
-  getAllSubjectsWithoutPagination
+  getAllSubjectsWithoutPagination,
+  downloadSubjectPDF,
+  downloadSubjectVideo
 } from '../../controllers/subjects/subjects.controller.js';
 import { uploadImage } from '../../controllers/multerImage.controller.js';
-import {uploadVideo} from '../../controllers/mutlerwork/multerVideo.controller.js';
+import {uploadVideo} from '../../controllers/multerwork/multerVideo.controller.js';
+import { verifyToken } from '../../utils/verifyUser.js';
+
 
 const router = express.Router();
 
@@ -28,5 +32,7 @@ router.delete('/:id', deleteSubject);
 router.post('/restore/:id', restoreSubject);
 router.delete('/permanent/:id', permanentDeleteSubject);
 router.delete('/recycle-bin/clear', clearSubjectRecycleBin);
+router.get('/download-video/:id', verifyToken, downloadSubjectVideo);
+router.get('/download-pdf/:id', verifyToken, downloadSubjectPDF);
 
 export default router;

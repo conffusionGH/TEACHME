@@ -96,11 +96,11 @@ const APIEndPoints = {
     },
     restore_subject: {
         url: `${serverDomain}/subjects/restore`,
-        method: 'DELETE'
+        method: 'POST'
     },
     permanent_delete_subject: {
         url: `${serverDomain}/subjects/permanent`,
-        method: 'GET'
+        method: 'DELETE'
     },
     clear_subject_recycle_bin: {
         url: `${serverDomain}/subjects/recycle-bin/clear`,
@@ -113,6 +113,14 @@ const APIEndPoints = {
     update_subject: {
         url: `${serverDomain}/subjects`,
         method: 'PUT'
+    },
+    download_video:{
+        url: `${serverDomain}/subjects/download-video`,
+        method: 'GET'
+    },
+    download_pdf:{
+        url: `${serverDomain}/subjects/download-pdf`,
+        method: 'GET'
     },
     create_assignment: {
         url: `${serverDomain}/assignment`,
@@ -127,7 +135,7 @@ const APIEndPoints = {
         method: 'POST'
     },
     get_assignments_paginated: {
-        url: `${serverDomain}/assignment/paginatedassignment`, // Use paginated endpoint
+        url: `${serverDomain}/assignment/paginatedassignment`,
         method: 'GET',
     },
     delete_assignment: {

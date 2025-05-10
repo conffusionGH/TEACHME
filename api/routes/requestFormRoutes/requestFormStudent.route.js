@@ -12,7 +12,7 @@ import {
   getDeletedRequestForms,
 } from '../../controllers/requestFormController/requestFormStudent.controller.js';
 import { uploadImage } from '../../controllers/multerImage.controller.js';
-import { uploadPDF } from '../../controllers/mutlerwork/multerPDF.controller.js';
+import { uploadPDF } from '../../controllers/multerwork/multerPDF.controller.js';
 
 
 const router = express.Router();

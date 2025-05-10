@@ -7,8 +7,8 @@ export default function Navbar() {
   
   const navItems = [
     { name: 'Home', icon: 'home' },
-    { name: 'Classroom', icon: 'book' },
     { name: 'Subjects', icon: 'bookmark' },
+    { name: 'Assignments', icon: 'book' },
     { name: 'History', icon: 'clock' }
   ]
 
