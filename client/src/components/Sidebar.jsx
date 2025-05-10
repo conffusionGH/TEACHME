@@ -48,7 +48,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
       management: path.includes('/management'),
       edit: path.includes('/subject-manage') || path.includes('/assignments'),
       forms: path.includes('/forms') || path.includes('/sign-up') || path.includes('/subjectForm') || path.includes('/assignemntForm') || path.includes('/requestForm'),
-      recycleBin: path.includes('/recycle-bin')
+      recycleBin: path.includes('/recycle-bin') 
     });
   }, [location.pathname]);
 
@@ -208,9 +208,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                           className="pl-10"
                         >
                           <li><Link to="/management/roles" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/roles') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Roles</Link></li>
-                          <li><Link to="/management/fee" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/fee') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Fee</Link></li>
-                          <li><Link to="/management/status" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/status') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Status</Link></li>
-                          <li><Link to="/management/subjects" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/subjects') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subjects</Link></li>
+                          <li><Link to="/management/request-form" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/management/request-form') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>RequestForm</Link></li>
                         </motion.ul>
                       )}
                     </AnimatePresence>
@@ -316,7 +314,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                               <Link to="/recycle-bin/subjects" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/subjects') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Subject Bin</Link>
                             </li>
                             <li>
-                              <Link to="/recycle-bin/assignments" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/assignments') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment Bin</Link>
+                              <Link to="/recycle-bin/assignments-bin" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/assignments-bin') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment Bin</Link>
                             </li>
                           </motion.ul>
                         )}
