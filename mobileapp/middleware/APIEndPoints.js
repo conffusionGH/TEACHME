@@ -27,6 +27,10 @@ const APIEndPoints = {
         url: `${SERVER_DOMAIN}/subjects/download-pdf`,
         method: 'GET'
     },
+    request_form: {
+        url: `${SERVER_DOMAIN}/request-form`,
+        method: 'POST'
+    },
 }
 
 export default APIEndPoints;
