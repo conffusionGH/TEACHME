@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,7 +44,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
     setOpenSections({
       roles: path.includes('/managers') || path.includes('/teachers') || path.includes('/students'),
       management: path.includes('/management'),
-      edit: path.includes('/subject-manage') || path.includes('/assignments'),
+      edit: path.includes('/subject-manage') || path.includes('/assignments') && !path.includes('/recycle-bin'),
       forms: path.includes('/forms') || path.includes('/sign-up') || path.includes('/subjectForm') || path.includes('/assignemntForm') || path.includes('/requestForm'),
       recycleBin: path.includes('/recycle-bin') 
     });
@@ -315,6 +313,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                             </li>
                             <li>
                               <Link to="/recycle-bin/assignments-bin" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/assignments-bin') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Assignment Bin</Link>
+                            </li>
+                            <li>
+                              <Link to="/recycle-bin/request-forms" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/recycle-bin/request-forms') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Request Bin</Link>
                             </li>
                           </motion.ul>
                         )}

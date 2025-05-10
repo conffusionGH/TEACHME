@@ -24,6 +24,8 @@ import DeletedAssignments from './pages/RecycleBin/DeletedAssignments';
 import EditAssignment from './pages/EditPage/EditAssignment';
 import RequestForm from './pages/Forms/RequestForm';
 import RequestFormIndustry from './pages/ManagementIndustry/RequestFormIndustry';
+import ViewRequestForm from './pages/ViewPage/ViewRequestForm';
+import DeletedRequestForms from './pages/RecycleBin/DeletedRequestForms';
 
 
 
@@ -59,8 +61,7 @@ export default function App() {
               <Route path="/edit-assignment/:id" element={<EditAssignment />} />
               <Route path="/requestForm" element={<RequestForm />} />
               <Route path="/management/request-form" element={<RequestFormIndustry />} />
-
-
+              <Route path="/view-request-form/:id" element={<ViewRequestForm />} />
 
 
 
@@ -70,6 +71,7 @@ export default function App() {
               <Route path="/recycle-bin/users" element={<DeletedUsers />} />
               <Route path="/recycle-bin/subjects" element={<DeletedSubjects />} />
               <Route path="/recycle-bin/assignments-bin" element={<DeletedAssignments />} />
+              <Route path="/recycle-bin/request-forms" element={<DeletedRequestForms />} />
             </Route>
 
             {/* Add other protected routes here */}

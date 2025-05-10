@@ -23,34 +23,9 @@ const getPaginatedResults = async (model, query, page = 1, limit = 8) => {
   };
 };
 
-// Create a new request form
 export const createRequestForm = async (req, res, next) => {
   try {
-
-    const { firstName, lastName, age, sex, email, fatherName, motherName, permanentAddress, temporaryAddress, description } = req.body;
-
-
-    // Handle image and PDF uploads
-
-    let studentImageUrl = "https://play-lh.googleusercontent.com/2kD49Sc5652DmjJNf7Kh17DEXx9HiD2Zz3LsNc6929yTW6VBbGBCr-CQLoOA7iUf6hk";
-
-    // let studentImageUrl = "https://play-lh.googleusercontent.com/...";
-    // if (req.file) {
-    //   studentImageUrl = `${process.env.SERVER_DOMAIN || 'http://localhost:8000'}/api/assets/images/${req.file.filename}`;
-    // }
-    if (req.body.image) {
-      studentImageUrl = req.body.image.startsWith('http')
-        ? req.body.image
-        : `${process.env.SERVER_DOMAIN || 'http://localhost:8000'}${req.body.image}`;
-    }
-
-    let pdfUrl = null;
-    if (req.files?.pdf) {
-      pdfUrl = `${process.env.SERVER_DOMAIN || 'http://localhost:8000'}/api/assets/pdfs/${req.file.filename}`;
-    }
-
-    const requestForm = new RequestFormStudent({
-      image: studentImageUrl,
+    const {
       firstName,
       lastName,
       age,
@@ -61,17 +36,56 @@ export const createRequestForm = async (req, res, next) => {
       permanentAddress,
       temporaryAddress,
       description,
-      pdf: pdfUrl,
+    } = req.body;
+
+    // Manual validation for required fields
+    const requiredFields = [
+      'firstName',
+      'lastName',
+      'age',
+      'sex',
+      'email',
+      'fatherName',
+      'motherName',
+      'permanentAddress',
+      'temporaryAddress',
+      'description',
+    ];
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return res.status(400).json({
+          success: false,
+          message: `Missing required field: ${field}`,
+        });
+      }
+    }
+
+    const requestForm = new RequestFormStudent({
+      firstName,
+      lastName,
+      age,
+      sex,
+      email,
+      fatherName,
+      motherName,
+      permanentAddress,
+      temporaryAddress,
+      description,
     });
 
     const savedForm = await requestForm.save();
-    res.status(201).json(savedForm);
+    res.status(201).json({
+      success: true,
+      data: savedForm,
+    });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Failed to create request form',
+    });
   }
 };
 
-// Get all request forms
 export const getAllRequestForms = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -126,38 +140,8 @@ export const updateRequestForm = async (req, res, next) => {
       return next(errorHandler(404, 'Request form is in recycle bin'));
     }
 
-    // Handle image upload
-    let studentImageUrl = requestForm.studentImage;
-    if (req.files?.image) {
-      // Delete old image if it exists and isn't default
-      if (requestForm.studentImage && !requestForm.studentImage.includes('default')) {
-        try {
-          const oldImagePath = getLocalImageFilePath(requestForm.studentImage);
-          await deleteImageFile(oldImagePath);
-        } catch (err) {
-          console.error('Error deleting old image:', err);
-        }
-      }
-      studentImageUrl = `${process.env.SERVER_DOMAIN || 'http://localhost:8000'}/api/assets/images/${req.files.image[0].filename}`;
-    }
-
-    // Handle PDF upload
-    let pdfUrl = requestForm.pdfFile;
-    if (req.files?.pdf) {
-      // Delete old PDF if it exists
-      if (requestForm.pdfFile) {
-        try {
-          const oldPdfPath = getLocalImageFilePath(requestForm.pdfFile);
-          await deleteImageFile(oldPdfPath);
-        } catch (err) {
-          console.error('Error deleting old PDF:', err);
-        }
-      }
-      pdfUrl = `${process.env.SERVER_DOMAIN || 'http://localhost:8000'}/api/assets/pdfs/${req.files.pdf[0].filename}`;
-    }
-
+    
     const updateData = {
-      studentImage: studentImageUrl,
       firstName: req.body.firstName || requestForm.firstName,
       lastName: req.body.lastName || requestForm.lastName,
       age: req.body.age || requestForm.age,
@@ -168,7 +152,6 @@ export const updateRequestForm = async (req, res, next) => {
       permanentAddress: req.body.permanentAddress || requestForm.permanentAddress,
       temporaryAddress: req.body.temporaryAddress || requestForm.temporaryAddress,
       description: req.body.description || requestForm.description,
-      pdfFile: pdfUrl,
     };
 
     const updatedForm = await RequestFormStudent.findByIdAndUpdate(

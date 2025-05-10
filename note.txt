@@ -1,5 +1,5 @@
 API:
-MONGO=mongodb+srv://TeachMe:TeachMe@teachme.pykcii0.mongodb.net/?retryWrites=true&w=majority&appName=TeachMe
+MONGO=mongodb+srv://TeachMe:XXXXXX@teachme.pykcii0.mongodb.net/?retryWrites=true&w=majority&appName=TeachMe
 PORT=8000
 JWT_SECRET=hello
 FILE_URL = http://localhost:8000
@@ -8,3 +8,7 @@ FILE_URL = http://localhost:8000
 CLIENT:
 VITE_SERVER_DOMAIN=http://localhost:8000/api
 FRONTEND_URL=http://localhost:5173/
+
+
+
+phone number in request form

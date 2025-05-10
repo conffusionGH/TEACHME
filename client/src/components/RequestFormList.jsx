@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import ReactPaginate from 'react-paginate';
-import { FaEdit, FaTrash, FaUser } from 'react-icons/fa';
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 const RequestFormList = ({ apiEndpoint, deleteEndpoint }) => {
     const [forms, setForms] = useState([]);
@@ -22,8 +22,8 @@ const RequestFormList = ({ apiEndpoint, deleteEndpoint }) => {
                 withCredentials: true,
             });
 
-            const formsData = response.data?.requestForms || []; // Change 'forms' to 'requestForms'
-            console.log('Forms Data:', formsData); // Debug log
+            const formsData = response.data?.requestForms || [];
+            console.log('Forms Data:', formsData);
             setForms(formsData);
             setCurrentPage(response.data?.currentPage ? response.data.currentPage - 1 : 0);
             setTotalPages(response.data?.totalPages || 0);
@@ -35,6 +35,7 @@ const RequestFormList = ({ apiEndpoint, deleteEndpoint }) => {
             setLoading(false);
         }
     };
+
     useEffect(() => {
         fetchForms(1);
     }, [apiEndpoint]);
@@ -44,8 +45,8 @@ const RequestFormList = ({ apiEndpoint, deleteEndpoint }) => {
         fetchForms(selectedPage);
     };
 
-    const handleEdit = (formId) => {
-        navigate(`/edit-request-form/${formId}`);
+    const handleView = (formId) => {
+        navigate(`/view-request-form/${formId}`, { replace: true });
     };
 
     const handleDelete = async (formId) => {
@@ -111,7 +112,6 @@ const RequestFormList = ({ apiEndpoint, deleteEndpoint }) => {
                                     <tr key={form._id} className="hover:bg-tertiary/50 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
-                                               
                                                 <div className="ml-4">
                                                     <div className="text-sm font-medium text-gray-900">
                                                         {form.firstName} {form.lastName}
@@ -136,11 +136,11 @@ const RequestFormList = ({ apiEndpoint, deleteEndpoint }) => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap space-x-2">
                                             <button
-                                                onClick={() => handleEdit(form._id)}
+                                                onClick={() => handleView(form._id)}
                                                 className="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 shadow-md hover:shadow-lg transition-all"
-                                                title="Edit"
+                                                title="View"
                                             >
-                                                <FaEdit className="h-4 w-4" />
+                                                <FaEye className="h-4 w-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(form._id)}
@@ -155,8 +155,8 @@ const RequestFormList = ({ apiEndpoint, deleteEndpoint }) => {
                             ) : (
                                 <tr>
                                     <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                                        No request forms found
-                                    </td>
+                                    No request forms found
+                                </td>
                                 </tr>
                             )}
                         </tbody>
