@@ -223,45 +223,44 @@ const APIEndPoints = {
 
     //notifications
     get_all_notifications: {
-    url: `${serverDomain}/notifications`,
-    method: 'GET'
-  },
-  create_notification: {
-    url: `${serverDomain}/notifications/create`,
-    method: 'POST'
-  },
-  get_notification: {
-    url: `${serverDomain}/notifications/:id`,
-    method: 'GET'
-  },
-  update_notification: {
-    url: `${serverDomain}/notifications/:id`,
-    method: 'PUT'
-  },
-  delete_notification: {
-    url: `${serverDomain}/notifications/:id`,
-    method: 'DELETE'
-  },
-  restore_notification: {
-    url: `${serverDomain}/notifications/restore/:id`,
-    method: 'PUT'
-  },
-  restore_all_notifications: {
-    url: `${serverDomain}/notifications/restore-all`,
-    method: 'PUT'
-  },
-  permanent_delete_notification: {
-    url: `${serverDomain}/notifications/permanent-delete/:id`,
-    method: 'DELETE'
-  },
-  delete_all_permanently: {
-    url: `${serverDomain}/notifications/delete-all`,
-    method: 'DELETE'
-  },
-  get_deleted_notifications: {
-    url: `${serverDomain}/notifications/deleted`,
-    method: 'GET'
-  }
+        url: `${serverDomain}/notifications`,
+        method: 'GET'
+    },
+    create_notification: {
+        url: `${serverDomain}/notifications/create`,
+        method: 'POST'
+    },
+    get_notification: {
+        url: `${serverDomain}/notifications/:id`,
+        method: 'GET'
+    },
+    update_notification: {
+        url: `${serverDomain}/notifications/:id`,
+        method: 'PUT'
+    },
+    delete_notification: {
+        url: `${serverDomain}/notifications/:id`,
+        method: 'DELETE'
+    },
+    restore_notification: {
+        url: `${serverDomain}/notifications/restore/:id`,
+        method: 'PUT'
+    },
+    restore_all_notifications: {
+        url: `${serverDomain}/notifications/restore-all`,
+        method: 'PUT'
+    },
+    permanent_delete_notification: {
+        url: `${serverDomain}/notifications/permanent-delete/:id`,
+        method: 'DELETE'
+    },
+    delete_all_permanently: {
+        url: `${serverDomain}/notifications/delete-all`,
+        method: 'DELETE'
+    },
+    get_deleted_notifications: {
+        url: `${serverDomain}/notifications/deleted`,
+        method: 'GET'
     },
     get_monthly_request_forms: {
         url: `${serverDomain}/request-form/monthly-request-forms`,
@@ -271,12 +270,7 @@ const APIEndPoints = {
         url: `${serverDomain}/subjects/stats`,
         method: 'GET',
     },
-
-
-
-
-
-
 }
+
 
 export default APIEndPoints;

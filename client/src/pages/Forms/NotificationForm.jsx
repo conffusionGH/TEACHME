@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import APIEndPoints from '../../middleware/ApiEndPoints';
 
 const NotificationForm = () => {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     title: '',
-    description: ''
+    description: '',
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ const NotificationForm = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.id]: e.target.value,
     });
   };
 
@@ -34,70 +34,95 @@ const NotificationForm = () => {
     }
 
     try {
-      const response = await axios.post(APIEndPoints.create_notification.url, {
-        title: formData.title,
-        description: formData.description,
-        userId: currentUser._id
-      }, {
-        withCredentials: true
-      });
+      const response = await axios.post(
+        APIEndPoints.create_notification.url,
+        {
+          title: formData.title,
+          description: formData.description,
+          userId: currentUser._id,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.data.success) {
+        toast.success('Notification created successfully!');
         setFormData({ title: '', description: '' });
-        navigate('/'); // Redirect to dashboard after success
+      } else {
+        throw new Error(response.data.message);
       }
     } catch (err) {
-      setError(err.message || 'Failed to create notification');
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to create notification';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold text-primary mb-4">Create Notification</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="mt-1 block w-full p-2 border rounded-md focus:ring-primary focus:border-primary"
-            placeholder="Enter notification title"
-            required
-          />
+    <div className="container mx-auto px-4 py-8">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-tertiary max-w-2xl mx-auto">
+        <div className="px-6 py-4 bg-secondary">
+          <h2 className="text-xl font-semibold text-primary">Create New Notification</h2>
         </div>
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="mt-1 block w-full p-2 border rounded-md focus:ring-primary focus:border-primary"
-            placeholder="Enter notification description"
-            rows="4"
-            required
-          />
+
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary"
+                  placeholder="Notification Title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary"
+                  placeholder="Notification Description"
+                  rows="4"
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            {error && <p className="text-error text-sm text-center">{error}</p>}
+
+            <div className="flex justify-end gap-4 pt-4 border-t border-tertiary">
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="px-4 py-2 border bg-error/60 hover:bg-error border-gray-300 rounded-lg text-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary disabled:opacity-70 transition-colors"
+              >
+                {loading ? 'Submitting...' : 'Submit Notification'}
+              </button>
+            </div>
+          </form>
         </div>
-        {error && (
-          <p className="text-error text-sm">{error}</p>
-        )}
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full p-2 rounded-md text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-primary-dark'}`}
-        >
-          {loading ? 'Submitting...' : 'Submit Notification'}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

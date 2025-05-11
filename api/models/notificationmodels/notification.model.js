@@ -19,6 +19,10 @@ export const notificationSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'A notification must be associated with a user']
   },
+  modifiedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Reference to User model
+  },
   createdAt: {
     type: Date,
     default: Date.now

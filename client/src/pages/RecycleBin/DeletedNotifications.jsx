@@ -7,7 +7,6 @@ import APIEndPoints from '../../middleware/ApiEndPoints';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-
 const DeletedNotifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -41,7 +40,7 @@ const DeletedNotifications = () => {
       });
 
       const data = res.data || {};
-      setNotifications(data.notifications || []);
+      setNotifications(data.deletedNotifications || []); // Use deletedNotifications
       setCurrentPage(data.currentPage ? data.currentPage - 1 : 0);
       setTotalPages(data.totalPages || 0);
       setTotalNotifications(data.totalNotifications || 0);
@@ -64,7 +63,9 @@ const DeletedNotifications = () => {
   const handleRestore = async (notificationId) => {
     if (window.confirm('Are you sure you want to restore this notification?')) {
       try {
-        await axios.put(`${apiRestoreNotification.replace(':id', notificationId)}`, {}, { withCredentials: true });
+        await axios.put(`${apiRestoreNotification.replace(':id', notificationId)}`, {}, {
+          withCredentials: true,
+        });
         toast.success('Notification restored successfully');
         fetchDeletedNotifications(currentPage + 1);
       } catch (error) {
@@ -76,7 +77,9 @@ const DeletedNotifications = () => {
   const handlePermanentDelete = async (notificationId) => {
     if (window.confirm('Are you sure you want to permanently delete this notification? This action cannot be undone!')) {
       try {
-        await axios.delete(`${apiPermanentDelete.replace(':id', notificationId)}`, { withCredentials: true });
+        await axios.delete(`${apiPermanentDelete.replace(':id', notificationId)}`, {
+          withCredentials: true,
+        });
         toast.success('Notification permanently deleted');
         fetchDeletedNotifications(currentPage + 1);
       } catch (error) {
@@ -99,7 +102,7 @@ const DeletedNotifications = () => {
 
   // Truncate description to 50 characters
   const truncateDescription = (text) => {
-    if (text.length <= 50) return text;
+    if (!text || text.length <= 50) return text || '';
     return text.substring(0, 50) + '...';
   };
 
@@ -143,11 +146,21 @@ const DeletedNotifications = () => {
           <table className="min-w-full divide-y divide-tertiary">
             <thead className="bg-tertiary">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">Description</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">Deleted By</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">Deleted At</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
+                  Title
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
+                  Description
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
+                  Created By
+                </th>
+                {/* <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
+                  Modified By
+                </th> */}
+                <th className="px-6 py-3 text-left text-sm font-medium text-primary uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-tertiary">
@@ -159,17 +172,39 @@ const DeletedNotifications = () => {
                         {notification.title}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{truncateDescription(notification.description)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{notification.deletedBy?.username || 'Anonymous'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <div className="text-sm text-gray-500">
-                        {new Date(notification.deletedAt).toLocaleDateString()}
+                        {truncateDescription(notification.description)}
                       </div>
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-500">
+                        {notification.createdBy ? (
+                          <span>
+                            {notification.createdBy.username}{' '}
+                            <span className="capitalize">
+                              ({notification.createdBy.roles})
+                            </span>
+                          </span>
+                        ) : (
+                          'Unknown'
+                        )}
+                      </div>
+                    </td>
+                    {/* <td className="px-6 py-4">
+                      <div className="text-sm text-gray-500">
+                        {notification.modifiedBy ? (
+                          <span>
+                            {notification.modifiedBy.username}{' '}
+                            <span className="capitalize">
+                              ({notification.modifiedBy.roles})
+                            </span>
+                          </span>
+                        ) : (
+                          'N/A'
+                        )}
+                      </div>
+                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
                         onClick={() => handleRestore(notification._id)}
@@ -212,9 +247,9 @@ const DeletedNotifications = () => {
               containerClassName={'flex justify-center space-x-2'}
               pageClassName={'rounded-lg border border-tertiary hover:bg-secondary/20'}
               pageLinkClassName={'text-primary px-3 py-2'}
-              activeClassName={'bg-primary text-white'}
-              previousClassName={'px-3 py-1 rounded-lg border border-tertiary hover:bg-secondary/20'}
-              nextClassName={'px-3 py-1 rounded-lg border border-tertiary hover:bg-secondary/20'}
+              activeClassName={'bg-secondary'}
+              previousClassName={'px-3 py-1 rounded-lg border border-tertiary bg-secondary/20 hover:bg-primary/20'}
+              nextClassName={'px-3 py-1 rounded-lg border border-tertiary bg-secondary/20 hover:bg-primary/20'}
               disabledClassName={'opacity-50 cursor-not-allowed'}
               forcePage={currentPage}
             />

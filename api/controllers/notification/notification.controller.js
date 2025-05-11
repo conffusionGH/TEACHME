@@ -7,6 +7,8 @@ const getPaginatedResults = async (model, query, page = 1, limit = 8) => {
 
   const results = await model
     .find(query)
+    .populate('createdBy', 'username roles')
+    .populate('modifiedBy', 'username roles')
     .skip(startIndex)
     .limit(limit)
     .exec();
@@ -113,6 +115,16 @@ export const updateNotification = async (req, res, next) => {
 
     if (notification.isDeleted === 0) {
       return next(errorHandler(404, 'Notification is in recycle bin'));
+    }
+
+    const userId =  req.user?.id ; 
+    console.log(userId);
+    if (!userId) {
+      return next(errorHandler(400, 'User ID is required to update notification'));
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(errorHandler(400, 'Invalid user ID'));
     }
 
     const updateData = {
@@ -226,7 +238,7 @@ export const getDeletedNotifications = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 8;
-    const filter = {isDeleted : 0}
+    const filter = { isDeleted: 0 }
 
     const { results, currentPage, totalPages, totalNotifications } = await getPaginatedResults(
       Notification,
