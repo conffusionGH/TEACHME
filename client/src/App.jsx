@@ -30,6 +30,9 @@ import NotificationForm from './pages/Forms/NotificationForm';
 import EditNotification from './pages/EditPage/EditNotification';
 import Notifications from './pages/EditList/Notifications';
 import DeletedNotifications from './pages/RecycleBin/DeletedNotifications';
+import SubmissionForm from './pages/SubmissionManagement/SubmissionForm';
+import SubmissionManagement from './pages/SubmissionManagement/SubmissionManagement';
+import SubmissionList from './pages/SubmissionManagement/SubmissionList';
 
 
 
@@ -63,12 +66,17 @@ export default function App() {
               <Route path="/subjectForm" element={<SubjectForm />} />
               <Route path="/assignemntForm" element={<AssignmentForm />} />
               <Route path="/edit-assignment/:id" element={<EditAssignment />} />
+              <Route path="/submitManagement/:assignmentId" element={<SubmissionManagement />} >
+                <Route index element={<SubmissionForm />} />
+                <Route path="submissions" element={<SubmissionList />} />
+              </Route>
               <Route path="/requestForm" element={<RequestForm />} />
               <Route path="/management/request-form" element={<RequestFormIndustry />} />
               <Route path="/view-request-form/:id" element={<ViewRequestForm />} />
               <Route path="/notificationForm" element={<NotificationForm />} />
               <Route path="/editNotification/:id" element={<EditNotification />} />
               <Route path="/notifications" element={<Notifications />} />
+              {/* <Route path="/submissionForm" element={<SubmissionForm />} /> */}
 
             </Route>
             <Route element={<RestrictedRoute allowedRoles={['admin']} />}>

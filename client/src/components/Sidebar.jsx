@@ -287,6 +287,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isPermanent }) => {
                             <li>
                               <Link to="/notificationForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/notificationForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Notification Form</Link>
                             </li>
+                            <li>
+                              <Link to="/submissionForm" className={`flex items-center p-2 text-sm rounded-lg ${isActive('/submissionForm') ? subMenuActive : subMenuInactive}`} onClick={handleLinkClick}>Submission Form</Link>
+                            </li>
                           </motion.ul>
                         )}
                       </AnimatePresence>

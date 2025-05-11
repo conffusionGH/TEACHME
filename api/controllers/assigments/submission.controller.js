@@ -4,19 +4,23 @@ import Submission from '../../models/assignmentmodels/submission.model.js';
 import Assignment from '../../models/assignmentmodels/assignment.model.js';
 import { errorHandler } from '../../utils/error.js';
 
-// ✅ Submit an assignment
+//  Submit an assignment
 export const submitAssignment = async (req, res, next) => {
   try {
     const { assignmentId, title, description } = req.body;
     // req.user._id
-    const studentId = req.user._id;
+    // if (!req.user || !req.user._id) {
+    //   return next(errorHandler(401, 'Unauthorized: Please log in to submit an assignment'));
+    // }
+    const studentId = req.user.id;
+    console.log(studentId)
 
     const assignment = await Assignment.findById(assignmentId);
     if (!assignment) return next(errorHandler(404, 'Assignment not found'));
 
-    if (existingSubmission) {
-      return next(errorHandler(400, 'You have already submitted this assignment'));
-    }
+    // if (existingSubmission) {
+    //   return next(errorHandler(400, 'You have already submitted this assignment'));
+    // }
 
     const now = new Date();
     const isLate = now > new Date(assignment.deadline);
@@ -37,7 +41,7 @@ export const submitAssignment = async (req, res, next) => {
   }
 };
 
-// ✅ Get all submissions for a student
+//  Get all submissions for a student
 export const getMySubmissions = async (req, res, next) => {
   try {
     const studentId = req.user._id;
@@ -51,7 +55,7 @@ export const getMySubmissions = async (req, res, next) => {
   }
 };
 
-// ✅ Get all submissions for a specific assignment (for teacher review)
+// Get all submissions for a specific assignment (for teacher review)
 export const getSubmissionsByAssignment = async (req, res, next) => {
   try {
     const assignmentId = req.params.assignmentId;

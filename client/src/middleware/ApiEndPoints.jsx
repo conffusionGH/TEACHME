@@ -270,7 +270,15 @@ const APIEndPoints = {
         url: `${serverDomain}/subjects/stats`,
         method: 'GET',
     },
-}
+    submit_assignment: {
+        url: `${serverDomain}/assignment`,
+        method: 'GET',
+    },
+    create_submission: {
+        url: `${serverDomain}/submission`,
+        method: 'POST',
+    },
+} 
 
 
-export default APIEndPoints;
+export default APIEndPoints;    
