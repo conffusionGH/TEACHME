@@ -1,7 +1,7 @@
 // const SERVER_DOMAIN = "http://192.168.1.96:8000/api" //hostel_4/5 Wifi
 // const SERVER_DOMAIN = "http://192.168.137.22:8000/api" //hotspot Wifi
 // SERVER_DOMAIN = "http://10.0.2.2:8000/api"
-SERVER_DOMAIN = "http://192.168.206.108:8000/api"
+SERVER_DOMAIN = "http://192.168.1.100:8000/api"
 
 
 console.log("Server Domain:", SERVER_DOMAIN);
@@ -26,6 +26,10 @@ const APIEndPoints = {
     download_pdf: {
         url: `${SERVER_DOMAIN}/subjects/download-pdf`,
         method: 'GET'
+    },
+    request_form: {
+        url: `${SERVER_DOMAIN}/request-form`,
+        method: 'POST'
     },
 }
 

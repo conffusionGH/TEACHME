@@ -57,6 +57,14 @@ export default function Login() {
     }
   };
 
+  const handleRequestLogin = () => {
+    // Reset navigation stack to avoid stacking
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'RequestForm' }],
+    });
+  };
+
   return (
     <View className="flex-1 items-center justify-center bg-tertiary p-4">
       <Text className="text-3xl font-bold text-primary mb-6">Sign In</Text>
@@ -86,6 +94,12 @@ export default function Login() {
           {loading ? 'Signing in...' : 'Sign In'}
         </Text>
       </TouchableOpacity>
+      <View className="flex-row mt-4">
+        <Text className="text-primary">Don't have an account? </Text>
+        <TouchableOpacity onPress={handleRequestLogin}>
+          <Text className="text-secondary font-semibold">Request a login</Text>
+        </TouchableOpacity>
+      </View>
       <Toast />
     </View>
   );

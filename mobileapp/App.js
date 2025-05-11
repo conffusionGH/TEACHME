@@ -11,6 +11,7 @@ import History from "./screens/history/History.js";
 import SubjectScreen from "./screens/subject/SubjectScreen.js";
 import SubjectDetailScreen from "./screens/subject/SubjectDetailScreen.js";
 import AssignmentListScreen from "./screens/assignment/Assignment.js";
+import RequestForm from "./screens/Auth/RequestForm.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export default function App() {
                 headerShown: false,
               }}
             >
+              <Stack.Screen name="RequestForm" component={RequestForm} options={{ headerShown: false }} />
               <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
               <Stack.Screen name="Home" component={HomeScreen} />
               <Stack.Screen name="Subjects" component={SubjectScreen} />
