@@ -24,6 +24,24 @@ const getPaginatedSubjects = async (query, page = 1, limit = 10) => {
   };
 };
 
+export const getSubjectStats = async (req, res, next) => {
+  try {
+    const activeCount = await Subject.countDocuments({ isActive: true, isDeleted: 1 });
+    const inactiveCount = await Subject.countDocuments({ isActive: false, isDeleted: 1 });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        active: activeCount,
+        inactive: inactiveCount,
+      },
+    });
+  } catch (error) {
+    console.error('Error in getSubjectStats:', error);
+    next(errorHandler(500, 'Failed to fetch subject stats'));
+  }
+};
+
 export const createSubject = async (req, res, next) => {
   try {
     const { name, code, description, creditHours, isActive, image, video, pdf } = req.body;
@@ -320,12 +338,12 @@ export const downloadSubjectVideo = async (req, res, next) => {
     }
 
     const filePath = getLocalFilePath(subject.video);
-    
+
     if (!fs.existsSync(filePath)) {
       return next(errorHandler(404, 'Video file not found on server'));
     }
 
-    res.setHeader('Content-Type', 'video/mp4'); 
+    res.setHeader('Content-Type', 'video/mp4');
     res.setHeader('Content-Disposition', `attachment; filename="${subject.name}.mp4"`);
 
     const fileStream = fs.createReadStream(filePath);
@@ -348,7 +366,7 @@ export const downloadSubjectPDF = async (req, res, next) => {
     }
 
     const filePath = getLocalFilePath(subject.pdf);
-    
+
     if (!fs.existsSync(filePath)) {
       return next(errorHandler(404, 'PDF file not found on server'));
     }

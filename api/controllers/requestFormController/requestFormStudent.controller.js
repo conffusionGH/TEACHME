@@ -23,6 +23,51 @@ const getPaginatedResults = async (model, query, page = 1, limit = 8) => {
   };
 };
 
+export const getMonthlyRequestForms = async (req, res, next) => {
+  try {
+    // Get current year
+    const currentYear = new Date().getFullYear();
+
+    // Aggregate to get monthly counts
+    const monthlyData = await RequestFormStudent.aggregate([
+      {
+        $match: {
+          isDeleted: 1,
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01`),
+            $lt: new Date(`${currentYear + 1}-01-01`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { "_id": 1 }
+      }
+    ]);
+
+    // Format data for all 12 months
+    const allMonths = Array.from({ length: 12 }, (_, i) => {
+      const monthData = monthlyData.find(item => item._id === i + 1);
+      return {
+        month: i + 1,
+        count: monthData ? monthData.count : 0
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: allMonths
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createRequestForm = async (req, res, next) => {
   try {
     const {
@@ -92,7 +137,7 @@ export const getAllRequestForms = async (req, res, next) => {
     const limit = 8;
     let filter = { isDeleted: 1 };
 
-  
+
 
     const { results, currentPage, totalPages, totalForms } = await getPaginatedResults(
       RequestFormStudent,
@@ -118,7 +163,7 @@ export const getRequestForm = async (req, res, next) => {
     const requestForm = await RequestFormStudent.findById(req.params.id);
     if (!requestForm) return next(errorHandler(404, 'Request form not found!'));
 
-   
+
     if (requestForm.isDeleted === 0) {
       return next(errorHandler(404, 'Request form is in recycle bin'));
     }
@@ -140,7 +185,7 @@ export const updateRequestForm = async (req, res, next) => {
       return next(errorHandler(404, 'Request form is in recycle bin'));
     }
 
-    
+
     const updateData = {
       firstName: req.body.firstName || requestForm.firstName,
       lastName: req.body.lastName || requestForm.lastName,
@@ -214,7 +259,7 @@ export const restoreRequestForm = async (req, res, next) => {
 // Restore all deleted request forms
 export const restoreAllRequestForms = async (req, res, next) => {
   try {
-  
+
 
     const restoredForms = await RequestFormStudent.updateMany(
       { isDeleted: 0 },
@@ -235,7 +280,7 @@ export const restoreAllRequestForms = async (req, res, next) => {
 // Permanently delete single request form
 export const permanentDeleteRequestForm = async (req, res, next) => {
   try {
-    
+
 
     const requestForm = await RequestFormStudent.findById(req.params.id);
     if (!requestForm) {
@@ -279,7 +324,7 @@ export const permanentDeleteRequestForm = async (req, res, next) => {
 // Permanently delete all deleted request forms
 export const deleteAllPermanently = async (req, res, next) => {
   try {
- 
+
 
     const deletedForms = await RequestFormStudent.find({ isDeleted: 0 });
     const deletionPromises = deletedForms.map(async (form) => {
@@ -336,3 +381,4 @@ export const getDeletedRequestForms = async (req, res, next) => {
     next(error);
   }
 };
+

@@ -12,7 +12,8 @@ import {
   getDeletedSubjects,
   getAllSubjectsWithoutPagination,
   downloadSubjectPDF,
-  downloadSubjectVideo
+  downloadSubjectVideo,
+  getSubjectStats
 } from '../../controllers/subjects/subjects.controller.js';
 import { uploadImage } from '../../controllers/multerImage.controller.js';
 import {uploadVideo} from '../../controllers/multerwork/multerVideo.controller.js';
@@ -26,6 +27,7 @@ router.get('/all', getAllSubjectsWithoutPagination);
 router.get('/', getAllSubjects);
 router.get('/delete', getDeletedSubjects);
 router.get('/search', searchSubjects);
+router.get('/stats', getSubjectStats); // New route for subject stats
 router.get('/:id', getSubject);
 router.put('/:id',uploadImage, uploadVideo , updateSubject);
 router.delete('/:id', deleteSubject);

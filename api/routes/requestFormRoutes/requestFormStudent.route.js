@@ -10,6 +10,7 @@ import {
   permanentDeleteRequestForm,
   deleteAllPermanently,
   getDeletedRequestForms,
+  getMonthlyRequestForms
 } from '../../controllers/requestFormController/requestFormStudent.controller.js';
 
 
@@ -21,6 +22,7 @@ router.get('/', getAllRequestForms);
 router.get('/bin/deleted',  getDeletedRequestForms);
 
 router.post('/', createRequestForm);
+router.get('/monthly-request-forms', getMonthlyRequestForms);
 router.get('/:id', getRequestForm);
 router.put('/update/:id', updateRequestForm);
 router.delete('/delete/:id', deleteRequestForm);

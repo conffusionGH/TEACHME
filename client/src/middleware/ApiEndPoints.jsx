@@ -14,6 +14,12 @@ const APIEndPoints = {
         url: `${serverDomain}/auth/signout`,
         method: 'get'
     },
+    //dashboard
+    get_dashboard_stats: {
+        url: `${serverDomain}/user/dashboard-stats`,
+        method: 'GET',
+    },
+
 
     //user handling
     update_user: {
@@ -114,11 +120,11 @@ const APIEndPoints = {
         url: `${serverDomain}/subjects`,
         method: 'PUT'
     },
-    download_video:{
+    download_video: {
         url: `${serverDomain}/subjects/download-video`,
         method: 'GET'
     },
-    download_pdf:{
+    download_pdf: {
         url: `${serverDomain}/subjects/download-pdf`,
         method: 'GET'
     },
@@ -213,7 +219,15 @@ const APIEndPoints = {
     clear_request_form_recycle_bin: {
         url: `${serverDomain}/request-form/bin/clear`,
         method: 'DELETE'
-    }
+    },
+    get_monthly_request_forms: {
+        url: `${serverDomain}/request-form/monthly-request-forms`,
+        method: 'GET'
+    },
+    get_subject_stats: {
+        url: `${serverDomain}/subjects/stats`,
+        method: 'GET',
+    },
 
 
 
