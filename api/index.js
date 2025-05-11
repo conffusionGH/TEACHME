@@ -12,6 +12,7 @@ import assignmentRouter from './routes/assignmentroutes/assignment.routes.js'
 import submissionRouter from './routes/assignmentroutes/submission.routes.js'
 import { fileURLToPath } from 'url';
 import requestFormRouter from './routes/requestFormRoutes/requestFormStudent.route.js'
+import notificationRouter from './routes/notificationroutes/notification.route.js'
 
 
 dotenv.config();
@@ -73,6 +74,7 @@ app.use('/api/subjects', subjectRouter);
 app.use('/api/assignment', assignmentRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/request-form', requestFormRouter);
+app.use('/api/notifications', notificationRouter);
 
 
 
